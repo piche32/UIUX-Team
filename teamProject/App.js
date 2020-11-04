@@ -1,10 +1,10 @@
 
 import React from 'react';
-import FlowerMain from './flower';
+import Garden from './src/screens/garden'
 
 const isMafia = false;
 
 export default class extends React.Component{
   render(){
-    return isMafia ?  null : <FlowerMain/>;}
+    return isMafia ?  null : <Garden/>;}
   }
