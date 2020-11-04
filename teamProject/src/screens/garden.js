@@ -33,7 +33,9 @@ function InGameScene() {
       <Stack.Screen name="Main" component={MainScene} options={{
         title: "", headerShown: false
       }} />
-      <Stack.Screen name="Book" component={BookScene} />
+      <Stack.Screen name="Book" component={BookScene} options={{
+        headerTitleAlign: 'center',
+      }} />
       <Stack.Screen name="Shop" component={ShopScene} options={{
         headerTitleAlign: 'center',
         headerRight: () => (
@@ -69,28 +71,5 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
-    mainSceneContainer: {
-      marginTop: '6%',
-      flex: 1,
-      backgroundColor: '#fff',
-    },
-    bookSceneContainer: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    shopSceneContainer: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    shopTab: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }
   });
   
