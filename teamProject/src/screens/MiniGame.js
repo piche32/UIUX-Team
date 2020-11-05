@@ -1,13 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, version} from 'react';
 import { StyleSheet, Text, View, Button, Pressable, ScrollView, Image} from 'react-native';
 import{NavigationContainer} from '@react-navigation/native';
 import{createStackNavigator} from '@react-navigation/stack';
 import{createDrawerNavigator} from '@react-navigation/drawer';
-import{MaterialCommunityIcons, MaterialIcons, Entypo} from '@expo/vector-icons';
+import{MaterialCommunityIcons, MaterialIcons, Entypo, Octicons} from '@expo/vector-icons';
 import{DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, DataTable} from 'react-native-paper';
 import{createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+
 
 function StartScene({navigation}){
     const pressBT = () => {
@@ -110,7 +112,14 @@ const defaultModalStyle = {
                 <Portal>
                     <Modal visible={settingVisible} onDismiss={hideSetting}
                         contentContainerStyle={defaultModalStyle}>
-                            <Text>Setting Modal. Click outsizd this area to dismiss</Text>
+                          <View style = {{flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
+                          <Octicons name="primitive-dot" size={130} color="black" style = {{top: "5%"}} />
+                          <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: "20%"}}>Setting</Text>
+                          <Text style={{fontSize: 20, fontWeight: "bold", color: "gray", marginBottom: "20%"}}>소리</Text>
+                          
+                          <Text style={{fontSize: 20, fontWeight: "bold", color: 'gray', marginBottom: "30%"}}>밝기</Text>
+                          </View>
+                            
                     </Modal>
                     <Modal visible={TutorialVisible1} onDismiss={changeTutorialModal}
                         contentContainerStyle={defaultModalStyle}>
@@ -254,6 +263,7 @@ function ScoreEasy(){
         <GamePlayStack.Screen name = "GMain" component = {GamePlayMainScene} options={{headerShown: false}}/>
         <GamePlayStack.Screen name = "Shop" component = {ShopScene}/>
         <GamePlayStack.Screen name = "Enhance" component = {EnhanceScene}/>
+        <GamePlayStack.Screen name = "Garden" component = {Garden}/>
       </GamePlayStack.Navigator>
     );
   }
@@ -267,6 +277,12 @@ function ScoreEasy(){
     const showEnemyInteraction = () => setEnemyInteractionVisible(true);
     const hideEnemyInteraction = () => setEnemyInteractionVisible(false);
     
+    const [successVisible, setSuccessVisible] = useState(false);
+    const showSuccess = () => {setEnemyInteractionVisible(false);
+      setSuccessVisible(true);
+    }
+    const hideSuccess = () => setSuccessVisible(false);
+    
 
     const goToShop = () => {
         navigation.navigate("Shop");
@@ -275,22 +291,101 @@ function ScoreEasy(){
         navigation.navigate("Enhance");
     }
     return(
-        <PaperProvider theme={theme}>
-            <Portal>
-                    <Modal visible={settingVisible} onDismiss={hideSetting}
-                        contentContainerStyle={GamePlayModal}>
-                            <Text>Setting Modal. Click outsizd this area to dismiss</Text>
-                    </Modal>
-                    <Modal visible={EnemyInteractionVisible} onDismiss={hideEnemyInteraction}
-                        contentContainerStyle={GamePlayModal}>
-                            <MaterialCommunityIcons name="alpha-x-circle" size = {50} color='black'/>
-                    </Modal>
-            </Portal>
-          <View style={{
-            flexWrap: "wrap",
-            flex: 1.5,
-            flexDirection: 'row',
-            paddingTop: '1%'
+      <PaperProvider theme={theme}>
+        <Portal>
+          <Modal visible={settingVisible} onDismiss={hideSetting}
+            contentContainerStyle={GamePlayModal} >
+            <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+              <Octicons name="primitive-dot" size={130} color="black" style={{ top: "5%" }} />
+              <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: "20%" }}>Setting</Text>
+              <Text style={{ fontSize: 20, fontWeight: "bold", color: "gray", marginBottom: "20%" }}>소리</Text>
+
+              <Text style={{ fontSize: 20, fontWeight: "bold", color: 'gray', marginBottom: "30%" }}>밝기</Text>
+            </View>
+          </Modal>
+          <Modal visible={EnemyInteractionVisible} onDismiss={hideEnemyInteraction}
+            contentContainerStyle={GamePlayModal}>
+            <View style={{
+              ...StyleSheet.absoluteFill,
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+              backgroundColor: '#5A5A5A',
+              borderWidth: 3,
+            }}>
+              <View>
+              <Text style={{ fontSize: 20, textAlign: 'center' }}>James</Text>
+              <MaterialCommunityIcons name="rectangle" size={70} color="black" />
+              </View>
+              <View style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: "70%",
+                height: "20%",
+                backgroundColor: 'white',
+                borderWidth: 3,
+              }}>
+                <Pressable onPress = {showSuccess} style = {{...StyleSheet.absoluteFill, flex:1, justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{ fontSize: 20 }}>암살</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <MaterialCommunityIcons name="coin" size={25} color="black" />
+                  <Text style={styles.titleText}>400</Text>
+                </View>
+                </Pressable>
+              </View>
+              <View style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: "70%",
+                height: "20%",
+                backgroundColor: 'white',
+                borderWidth: 3,
+              }}>
+                <Text style={{ fontSize: 20 }}>회유</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <MaterialCommunityIcons name="coin" size={25} color="black" />
+                  <Text style={styles.titleText}>700</Text>
+                </View>
+
+              </View>
+            </View>
+          </Modal>
+          <Modal visible={successVisible} onDismiss={hideSuccess}
+            contentContainerStyle={GamePlayModal}>
+            <View style = {{
+              ...StyleSheet.absoluteFill,
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              backgroundColor: "#A5A5A5",
+              borderWidth: 3,
+              borderColor: '#5A5A5A'}}>
+                <Text style = {{fontSize: 50, color: 'purple'}}>승리!!</Text>
+               
+                <View >
+              <View style = {{flexDirection: 'row'}}>
+              <MaterialCommunityIcons name="seed" size={30} color="black" />
+              <Entypo name="cross" size={30} color="black" />
+              <Text style = {{fontSize: 30}}>4</Text>
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                  <MaterialCommunityIcons name="sack" size={30} color="black" />
+                  <Entypo name="cross" size={30} color="black" />
+                  <Text style={{ fontSize: 30 }}>4</Text>
+                </View>
+              </View>
+              <View style = {{borderWidth: 2, width: "40%", height: "10%", justifyContent: 'center'}}>
+              <Pressable onPress = {() => {}} style = {{...StyleSheet.absoluteFill, flex:1, justifyContent: 'center', alignItems: 'center'}}>
+                
+                <Text style={{textAlign: 'center', fontSize: 20 }}>보상 받기</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+        </Portal>
+        <View style={{
+          flexWrap: "wrap",
+          flex: 1.5,
+          flexDirection: 'row',
+          paddingTop: '1%'
           }}>
             <View style={{
               flex: 1,
