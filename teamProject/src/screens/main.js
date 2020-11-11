@@ -7,6 +7,7 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Field from '../components/field';
 import BookScene from './book';
 import Bag from '../components/bag';
+import Setting from '../components/setting';
 
 function WorkerUI(props) {
   return (
@@ -67,14 +68,6 @@ const profileModalStyle = {
   marginLeft: "15%",
 };
 
-const settingModalStyle = {
-  backgroundColor: 'white',
-  padding: 20,
-  height: "70%",
-  width: "70%",
-  marginLeft: "15%",
-};
-
 const bagModalStyle = {
   backgroundColor: 'white',
   padding: 20,
@@ -113,7 +106,6 @@ export default function MainScene({ navigation }) {
     navigation.navigate("Shop");
   }
 
-
   return (
     <PaperProvider theme={theme}>
       <View style={styles.mainSceneContainer}>
@@ -125,10 +117,7 @@ export default function MainScene({ navigation }) {
             <Text>추가 수입 0</Text>
             <Text>최대 밭 갯수 5</Text>
           </Modal>
-          <Modal visible={settingVisible} onDismiss={hideSetting}
-            contentContainerStyle={settingModalStyle}>
-            <Text>Setting Modal. Click outsizd this area to dismiss</Text>
-          </Modal>
+          <Setting visible={settingVisible} onDismiss={hideSetting}/>
           <Modal visible={bagVisible} onDismiss={hideBag}
             contentContainerStyle={bagModalStyle}>
               <Bag/>
