@@ -5,9 +5,10 @@ import{NavigationContainer} from '@react-navigation/native';
 import{createStackNavigator} from '@react-navigation/stack';
 import{createDrawerNavigator} from '@react-navigation/drawer';
 import{MaterialCommunityIcons, MaterialIcons, Entypo, Octicons} from '@expo/vector-icons';
-import{DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, DataTable} from 'react-native-paper';
+import{DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, DataTable, List} from 'react-native-paper';
 import{createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 
 
@@ -23,7 +24,7 @@ function StartScene({navigation}){
       </View>
     );
   }
-
+  
   const Stack = createStackNavigator();
 
   function InGameScene(){
@@ -257,18 +258,113 @@ function ScoreEasy(){
 
   const GamePlayStack = createStackNavigator();
 
+  const decimalPlaces = 0;
+  const PlayTime = {
+      isCounting: true,
+      //start: 0,
+      end: 9900,
+      duration: 9900,  // 실행 주기(몇 초동안 실행할 건지)
+      easing: 'linear', // easeOutCubic | easeInCubic | linear
+      shouldUseToLocaleString: true,
+      toLocaleStringParams: {
+        locale: undefined, // set locale here
+        // set options here
+        options: {
+          minimumFractionDigits: decimalPlaces,
+          maximumFractionDigits: decimalPlaces
+        }
+      },
+      //prefix: "+",
+      //suffix: " users",
+      
+      decimalPlaces,
+      thousandsSeparator: '',
+      decimalSeparator: '',
+      preserveValue : true,
+    };
+
+
+  var money = 1000;
+  var playTime = 0;
+
+  const updateGameState = () => {
+    playTime = playTime+1;
+    if(playTime % 10 == 0)
+      money = money + 500;
+  }
+  class UpdateStatus_UnderBar extends React.Component{
+    constructor(){
+      super()
+      this.state = {
+        count: 0,
+        isUpdate: false,
+        }
+    }
+  
+    componentDidMount(){
+      this.interval = setInterval(this.inc, 1000)
+    }
+  
+    componentWillUnmount(){
+      clearInterval(this.interval)
+    }
+  
+    inc = () => {
+      this.setState(prevState => ({
+        count: prevState.count +1,
+      })),
+      updateGameState()
+    }
+
+    render(){
+			return (
+      <>
+      <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '70%', height: '100%', backgroundColor: 'gray' }}>
+          <DataTable>
+          <DataTable.Row>
+            <DataTable.Cell><Entypo name="stopwatch" size={25} color="black"/>
+            <Text style={styles.titleText}> {parseInt(playTime / 60)}:{parseInt(playTime % 60)}</Text>
+             </DataTable.Cell>
+          </DataTable.Row>
+          <DataTable.Row>
+            <DataTable.Cell><MaterialCommunityIcons name="coin" size={25} color="black"/> <Text style={styles.titleText}>{money}</Text></DataTable.Cell>
+          </DataTable.Row>
+          </DataTable>
+        <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
+      </View>
+      <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '30%', height: '100%', backgroundColor: 'gray' }}>
+      <DataTable>
+          <DataTable.Row>
+            <DataTable.Cell>
+                <MaterialCommunityIcons name="rectangle" size={25} color="red"/> <Text style={styles.titleText}>7</Text>
+                </DataTable.Cell>
+          </DataTable.Row>
+          <DataTable.Row>
+            <DataTable.Cell>
+                <MaterialCommunityIcons name="rectangle" size={25} color="cyan"/> 
+                <Text style={styles.titleText}> 5</Text>
+                </DataTable.Cell>
+          </DataTable.Row>
+          </DataTable>
+        <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
+      </View>
+      </>
+			)
+	}
+}
   function GamePlayScene(){
     return(
       <GamePlayStack.Navigator>
         <GamePlayStack.Screen name = "GMain" component = {GamePlayMainScene} options={{headerShown: false}}/>
         <GamePlayStack.Screen name = "Shop" component = {ShopScene}/>
         <GamePlayStack.Screen name = "Enhance" component = {EnhanceScene}/>
-        <GamePlayStack.Screen name = "Garden" component = {Garden}/>
+        {/* <GamePlayStack.Screen name = "Garden" component = {Garden}/> */}
       </GamePlayStack.Navigator>
     );
   }
 
   function GamePlayMainScene({navigation}){
+    
     const [settingVisible, setSettingVisible] = useState(false);
     const showSetting = () => setSettingVisible(true);
     const hideSetting = () => setSettingVisible(false);
@@ -290,9 +386,11 @@ function ScoreEasy(){
     const goToEnhance = () => {
         navigation.navigate("Enhance");
     }
+    
     return(
       <PaperProvider theme={theme}>
         <Portal>
+          
           <Modal visible={settingVisible} onDismiss={hideSetting}
             contentContainerStyle={GamePlayModal} >
             <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
@@ -427,33 +525,7 @@ function ScoreEasy(){
               <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }}/>
             </View>
             <View style={{ flex: 0.23, flexDirection: 'row', justifyContent: 'flex-end' }}>
-              <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '70%', height: '100%', backgroundColor: 'gray' }}>
-                  <DataTable>
-                  <DataTable.Row>
-                    <DataTable.Cell><Entypo name="stopwatch" size={25} color="black"/> <Text style={styles.titleText}>06:37</Text></DataTable.Cell>
-                  </DataTable.Row>
-                  <DataTable.Row>
-                    <DataTable.Cell><MaterialCommunityIcons name="coin" size={25} color="black"/> <Text style={styles.titleText}>3700</Text></DataTable.Cell>
-                  </DataTable.Row>
-                  </DataTable>
-                <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
-              </View>
-              <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '30%', height: '100%', backgroundColor: 'gray' }}>
-              <DataTable>
-                  <DataTable.Row>
-                    <DataTable.Cell>
-                        <MaterialCommunityIcons name="rectangle" size={25} color="red"/> <Text style={styles.titleText}>7</Text>
-                        </DataTable.Cell>
-                  </DataTable.Row>
-                  <DataTable.Row>
-                    <DataTable.Cell>
-                        <MaterialCommunityIcons name="rectangle" size={25} color="cyan"/> 
-                        <Text style={styles.titleText}> 5</Text>
-                        </DataTable.Cell>
-                  </DataTable.Row>
-                  </DataTable>
-                <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
-              </View>
+              <UpdateStatus_UnderBar />
             </View>
           </View>
       </PaperProvider>
@@ -461,38 +533,20 @@ function ScoreEasy(){
   }
 
   function ShopScene(){
+    
+    const purchaseItem = () => {
+      
+  }
     return (
         <View style={{ flex: 7, justifyContent: "space-between", paddingTop: '10%'}}>
-            <Image source={require('./../../assets/item1.png')}  style={styles.itembox} resizeMode="stretch"/>
-            <Image source={require('./../../assets/item2.png')}  style={styles.itembox} resizeMode="stretch"/>
+         <Pressable onPress = {purchaseItem} style={styles.itembox}>
+            <Image source={require('./../../assets/item1.png')} style={styles.itembox2} resizeMode="stretch"/>
+          </Pressable>
+          <Pressable style={styles.itembox}>
+            <Image source={require('./../../assets/item2.png')}  style={styles.itembox2} resizeMode="stretch"/>
+          </Pressable>
         <View style={{ flex: 0.37, flexDirection: 'row', justifyContent: 'flex-end' }}>
-              <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '70%', height: '100%', backgroundColor: 'gray' }}>
-                  <DataTable>
-                  <DataTable.Row>
-                    <DataTable.Cell><Entypo name="stopwatch" size={25} color="black"/> <Text style={styles.titleText}>06:37</Text></DataTable.Cell>
-                  </DataTable.Row>
-                  <DataTable.Row>
-                    <DataTable.Cell><MaterialCommunityIcons name="coin" size={25} color="black"/> <Text style={styles.titleText}>3700</Text></DataTable.Cell>
-                  </DataTable.Row>
-                  </DataTable>
-                <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
-              </View>
-              <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '30%', height: '100%', backgroundColor: 'gray' }}>
-              <DataTable>
-                  <DataTable.Row>
-                    <DataTable.Cell>
-                        <MaterialCommunityIcons name="rectangle" size={25} color="red"/> <Text style={styles.titleText}>7</Text>
-                        </DataTable.Cell>
-                  </DataTable.Row>
-                  <DataTable.Row>
-                    <DataTable.Cell>
-                        <MaterialCommunityIcons name="rectangle" size={25} color="cyan"/> 
-                        <Text style={styles.titleText}> 5</Text>
-                        </DataTable.Cell>
-                  </DataTable.Row>
-                  </DataTable>
-                <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
-              </View>
+            <UpdateStatus_UnderBar/>
             </View>
             </View>
       );
@@ -618,11 +672,18 @@ export default function MiniGameMain() {
       alignItems:'flex-end',
     },
     itembox: {
-        alignSelf: 'center',
-        height: '30%',
-        width: '80%',
-        justifyContent: 'center',
-      },
+      alignSelf: 'center',
+      height: '30%',
+      width: '80%',
+      justifyContent: 'center',
+    },
+    itembox2: {
+      alignSelf: 'center',
+      height: '100%',
+      width: '100%',
+      justifyContent: 'center',
+      resizeMode : "stretch"
+    },
     enhancebox: {
         alignSelf: 'center',
         height: '85%',
