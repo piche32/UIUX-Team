@@ -9,7 +9,6 @@ import{DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, DataTable
 import{createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import { render } from 'react-dom';
 
 
 
@@ -50,22 +49,12 @@ function StartScene({navigation}){
 
 const defaultModalStyle = {
     backgroundColor: 'white',
-    padding: 5,
+    padding: 20,
     height: "70%",
     width: "70%",
     marginLeft: "15%",
     alignItems: 'center',
     justifyContent: 'center',
-};
-
-const TutorialModalStyle = {
-  backgroundColor: 'white',
-  padding: 5,
-  height: "70%",
-  width: "70%",
-  marginLeft: "15%",
-  alignItems: 'flex-start',
-  justifyContent: 'flex-start',
 };
 
   function MainScene({ navigation }) {
@@ -79,13 +68,7 @@ const TutorialModalStyle = {
     const [TutorialVisible4, setTutorialVisible4] = useState(false);
     const [TutorialVisible5, setTutorialVisible5] = useState(false);
     const showTutorial = () => setTutorialVisible1(true);
-    const hideTutorial = () => {
-      setTutorialVisible1(false);
-      setTutorialVisible2(false);
-      setTutorialVisible3(false);
-      setTutorialVisible4(false);
-      setTutorialVisible5(false);
-    }
+    const hideTutorial = () => setTutorialVisible5(false);
     const changeTutorialModal = () => {
         if (TutorialVisible1) {
             setTutorialVisible1(false);
@@ -107,8 +90,6 @@ const TutorialModalStyle = {
     const hideGameStart = () => setGameStartVisible(false);
 
     const goToGamePlay = () => {
-      money = 1000;
-      playTime = 0;
       navigation.navigate("GamePlay");
   }
 
@@ -132,10 +113,8 @@ const TutorialModalStyle = {
                 <Portal>
                     <Modal visible={settingVisible} onDismiss={hideSetting}
                         contentContainerStyle={defaultModalStyle}>
-                          <MaterialCommunityIcons style = {{flex: 1.15, marginRight: '80%'}} onPress = {hideSetting}
-                             name="file-excel-box" size = {50} color='black'/>
-                          <View style = {{flex: 8, justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
-                          <Octicons name="primitive-dot" size={130} color="black"/>
+                          <View style = {{flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
+                          <Octicons name="primitive-dot" size={130} color="black" style = {{top: "5%"}} />
                           <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: "20%"}}>Setting</Text>
                           <Text style={{fontSize: 20, fontWeight: "bold", color: "gray", marginBottom: "20%"}}>소리</Text>
                           
@@ -144,76 +123,56 @@ const TutorialModalStyle = {
                             
                     </Modal>
                     <Modal visible={TutorialVisible1} onDismiss={changeTutorialModal}
-                        contentContainerStyle={TutorialModalStyle}>
-                            <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                             name="file-excel-box" size = {50} color='black'/>
-                            <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
+                        contentContainerStyle={defaultModalStyle}>
                             <MaterialCommunityIcons name="bug" size = {80} color='black'/>
                             <Text style={styles.titleText}> Tutorial </Text>
-                            </View>
-                            <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                            <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>1. 게임의 목표</Text>
-                            <Text style={{fontSize: 19}}>상대방을 전부 섬멸, 혹은 항복 시켜 상대로부터 승리한다.</Text>
+                            <View>
+                            <Text>1. 게임의 목표</Text>
+                            <Text>상대방을 전부 섬멸, 혹은 항복 시켜 상대로부터 승리한다.</Text>
                             </View>
                     </Modal>
                     <Modal visible={TutorialVisible2} onDismiss={changeTutorialModal}
-                        contentContainerStyle={TutorialModalStyle}>
-                          <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                        name="file-excel-box" size = {50} color='black'/>
-                       <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
-                       <MaterialCommunityIcons name="bug" size = {80} color='black'/>
-                       <Text style={styles.titleText}> Tutorial </Text>
-                       </View>
-                       <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                       <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>2. 상대방과 인터렉션</Text>
-                       <Text style={{fontSize: 18}}>플레이어는 암살과 포섭 총 두 가지 인터렉션이 가능하다. </Text>
-                       <Text/>
-                       <Text style={{fontSize: 18}}>이를 이용하여 상대보다 빠르게 상대 조직의 수를 줄이고, 플레이어의 조직원 수를 늘려야 한다.</Text>
-                       </View>
+                        contentContainerStyle={defaultModalStyle}>
+                        <MaterialCommunityIcons name="bug" size = {80} color='black'/>
+                            <Text style={styles.titleText}> Tutorial </Text>
+                            <View>
+                            <Text>2. 상대방과 인터렉션</Text>
+                            <Text></Text>
+                            <Text>플레이어는 암살과 회유 총 두 가지 인터렉션을 사용하여 상대 조직의 수를 줄이고, 플레이어의 조직원 수를 늘릴 수 있다.</Text>
+                            <Text>물론, 상대 또한 똑같이 플레이어의 조직원에게 암살, 회유를 시도가 가능하다.</Text>
+                            </View>
                     </Modal>
                     <Modal visible={TutorialVisible3} onDismiss={changeTutorialModal}
-                        contentContainerStyle={TutorialModalStyle}>
-                        <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                        name="file-excel-box" size = {50} color='black'/>
-                       <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
-                       <MaterialCommunityIcons name="bug" size = {80} color='black'/>
-                       <Text style={styles.titleText}> Tutorial </Text>
-                       </View>
-                       <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                       <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>3. 암살 / 포섭 하기</Text>
-                       <Text style={{fontSize: 18}}>플레이어는 원하는 상대 조직의 조직원을 터치해 터치한 조직원의 정보를 얻을 수 있다.</Text>
-                       <Text/>
-                       <Text style={{fontSize: 18}}>또한 이를 참고하여 자신의 자원을 소모하여 암살, 포섭를 할 수 있다.</Text>
-                       </View>
+                        contentContainerStyle={defaultModalStyle}>
+                        <MaterialCommunityIcons name="bug" size = {80} color='black'/>
+                            <Text style={styles.titleText}> Tutorial </Text>
+                            <View>
+                            <Text>3. 암살 / 회유 하기</Text>
+                            <Text>플레이어는 원하는 상대 조직의 조직원을 터치해 터치한 조직원의 정보를 얻을 수 있다.</Text>
+                            <Text></Text>
+                            <Text>또한 이를 참고하여 자신의 자원을 소모하여 암살, 회유를 할 수 있다.</Text>
+                            </View>
                     </Modal>
                     <Modal visible={TutorialVisible4} onDismiss={changeTutorialModal}
-                        contentContainerStyle={TutorialModalStyle}>
-                        <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                        name="file-excel-box" size = {50} color='black'/>
-                       <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
-                       <MaterialCommunityIcons name="bug" size = {80} color='black'/>
-                       <Text style={styles.titleText}> Tutorial </Text>
-                       </View>
-                       <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                       <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>4. 상점, 능력치</Text>
-                       <Text style={{fontSize: 17}}>게임에는 상점과 능력치가 존재한다.</Text>
-                       <Text/>
-                       <Text style={{fontSize: 17}}>상점에는 지속성 아이템과 소모성 아이템이 있고, 능력치는 플레이어가 강화한 능력치에 따라 게임의 플레이를 변화시킬 수 있다.</Text>
+                        contentContainerStyle={defaultModalStyle}>
+                        <MaterialCommunityIcons name="bug" size = {80} color='black'/>
+                            <Text style={styles.titleText}> Tutorial </Text>
+                            <View>
+                            <Text>4. 상점, 능력치</Text>
+                            <Text>게임에는 상점과 능력치가 존재한다.</Text>
+                            <Text></Text>
+                            <Text>상점에는 지속성 아이템과 소모성 아이템이 있고, 능력치는 플레이어가 강화한 능력치에 따라 게임의 플레이를 변화할 수 있다.</Text>
                             </View>
                     </Modal>
                     <Modal visible={TutorialVisible5} onDismiss={hideTutorial}
-                        contentContainerStyle={TutorialModalStyle}>
-                        <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                        name="file-excel-box" size = {50} color='black'/>
-                       <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
-                       <MaterialCommunityIcons name="bug" size = {80} color='black'/>
-                       <Text style={styles.titleText}> Tutorial </Text>
-                       </View>
-                       <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                       <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>5. 게임 즐기기</Text>
-                       <Text style={{fontSize: 18}}>게임을 재미있게 즐겨보자.</Text>
-                       <Text/>
-                       <Text style={{fontSize: 18}}>클리어타임을 줄이는 것을 목표로 하는 것도 하나의 방법.</Text>
+                        contentContainerStyle={defaultModalStyle}>
+                        <MaterialCommunityIcons name="bug" size = {80} color='black'/>
+                            <Text style={styles.titleText}> Tutorial </Text>
+                            <View>
+                            <Text>5. 게임 즐기기</Text>
+                            <Text>게임을 재미있게 즐기자.</Text>
+                            <Text></Text>
+                            <Text>클리어타임을 줄이는 것을 목표로 하는 것도 하나의 방법.</Text>
                             </View>
                     </Modal>
                     
@@ -287,7 +246,7 @@ function ScoreEasy(){
 
   const GamePlayModal = {
     backgroundColor: 'white',
-    padding: 5,
+    padding: 20,
     height: "70%",
     width: "70%",
     marginLeft: "15%",
@@ -299,79 +258,46 @@ function ScoreEasy(){
 
   const GamePlayStack = createStackNavigator();
 
+  const decimalPlaces = 0;
+  const PlayTime = {
+      isCounting: true,
+      //start: 0,
+      end: 9900,
+      duration: 9900,  // 실행 주기(몇 초동안 실행할 건지)
+      easing: 'linear', // easeOutCubic | easeInCubic | linear
+      shouldUseToLocaleString: true,
+      toLocaleStringParams: {
+        locale: undefined, // set locale here
+        // set options here
+        options: {
+          minimumFractionDigits: decimalPlaces,
+          maximumFractionDigits: decimalPlaces
+        }
+      },
+      //prefix: "+",
+      //suffix: " users",
+      
+      decimalPlaces,
+      thousandsSeparator: '',
+      decimalSeparator: '',
+      preserveValue : true,
+    };
+
+
   var money = 1000;
   var playTime = 0;
 
   const updateGameState = () => {
-
     playTime = playTime+1;
     if(playTime % 10 == 0)
       money = money + 500;
   }
-
-  class ShowStatus_UnderBar extends React.Component{
-    constructor(){
-      super()
-      this.state = {
-        count: 0
-        }
-    }
-
-    componentDidMount(){
-      this.interval = setInterval(this.inc, 250)
-    }
-  
-    componentWillUnmount(){
-      clearInterval(this.interval)
-    }
-  
-    inc = () => {
-      this.setState(prevState => ({
-        count: prevState.count +1,
-      }))
-    }
-
-    render(){
-			return (
-        <>
-        <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '70%', height: '100%', backgroundColor: 'gray' }}>
-            <DataTable>
-            <DataTable.Row>
-              <DataTable.Cell><Entypo name="stopwatch" size={25} color="black"/>
-              <Text style={styles.titleText}> {parseInt(playTime / 60)}:{parseInt(playTime % 60)}</Text>
-               </DataTable.Cell>
-            </DataTable.Row>
-            <DataTable.Row>
-              <DataTable.Cell><MaterialCommunityIcons name="coin" size={25} color="black"/> <Text style={styles.titleText}>{money}</Text></DataTable.Cell>
-            </DataTable.Row>
-            </DataTable>
-          <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
-        </View>
-        <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '30%', height: '100%', backgroundColor: 'gray' }}>
-        <DataTable>
-            <DataTable.Row>
-              <DataTable.Cell>
-                  <MaterialCommunityIcons name="rectangle" size={25} color="red"/> <Text style={styles.titleText}>7</Text>
-                  </DataTable.Cell>
-            </DataTable.Row>
-            <DataTable.Row>
-              <DataTable.Cell>
-                  <MaterialCommunityIcons name="rectangle" size={25} color="cyan"/> 
-                  <Text style={styles.titleText}> 5</Text>
-                  </DataTable.Cell>
-            </DataTable.Row>
-            </DataTable>
-          <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
-        </View>
-        </>
-			)
-	}
-}
   class UpdateStatus_UnderBar extends React.Component{
     constructor(){
       super()
       this.state = {
-        count: 0
+        count: 0,
+        isUpdate: false,
         }
     }
   
@@ -392,13 +318,41 @@ function ScoreEasy(){
 
     render(){
 			return (
-        <ShowStatus_UnderBar/>
+      <>
+      <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '70%', height: '100%', backgroundColor: 'gray' }}>
+          <DataTable>
+          <DataTable.Row>
+            <DataTable.Cell><Entypo name="stopwatch" size={25} color="black"/>
+            <Text style={styles.titleText}> {parseInt(playTime / 60)}:{parseInt(playTime % 60)}</Text>
+             </DataTable.Cell>
+          </DataTable.Row>
+          <DataTable.Row>
+            <DataTable.Cell><MaterialCommunityIcons name="coin" size={25} color="black"/> <Text style={styles.titleText}>{money}</Text></DataTable.Cell>
+          </DataTable.Row>
+          </DataTable>
+        <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
+      </View>
+      <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '30%', height: '100%', backgroundColor: 'gray' }}>
+      <DataTable>
+          <DataTable.Row>
+            <DataTable.Cell>
+                <MaterialCommunityIcons name="rectangle" size={25} color="red"/> <Text style={styles.titleText}>7</Text>
+                </DataTable.Cell>
+          </DataTable.Row>
+          <DataTable.Row>
+            <DataTable.Cell>
+                <MaterialCommunityIcons name="rectangle" size={25} color="cyan"/> 
+                <Text style={styles.titleText}> 5</Text>
+                </DataTable.Cell>
+          </DataTable.Row>
+          </DataTable>
+        <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
+      </View>
+      </>
 			)
 	}
 }
-
-
-  function GamePlayScene(){  
+  function GamePlayScene(){
     return(
       <GamePlayStack.Navigator>
         <GamePlayStack.Screen name = "GMain" component = {GamePlayMainScene} options={{headerShown: false}}/>
@@ -433,26 +387,22 @@ function ScoreEasy(){
         navigation.navigate("Enhance");
     }
     
-
     return(
       <PaperProvider theme={theme}>
         <Portal>
           
           <Modal visible={settingVisible} onDismiss={hideSetting}
             contentContainerStyle={GamePlayModal} >
-            <MaterialCommunityIcons style = {{flex: 1.15, marginRight: '80%'}} onPress = {hideSetting}
-                             name="file-excel-box" size = {50} color='black'/>
-                          <View style = {{flex: 8, justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
-                          <Octicons name="primitive-dot" size={130} color="black"/>
-                          <Text style={{fontSize: 20, fontWeight: "bold", marginBottom: "20%"}}>Setting</Text>
-                          <Text style={{fontSize: 20, fontWeight: "bold", color: "gray", marginBottom: "20%"}}>소리</Text>
-                          
-                          <Text style={{fontSize: 20, fontWeight: "bold", color: 'gray', marginBottom: "30%"}}>밝기</Text>
-                          </View>
+            <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+              <Octicons name="primitive-dot" size={130} color="black" style={{ top: "5%" }} />
+              <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: "20%" }}>Setting</Text>
+              <Text style={{ fontSize: 20, fontWeight: "bold", color: "gray", marginBottom: "20%" }}>소리</Text>
+
+              <Text style={{ fontSize: 20, fontWeight: "bold", color: 'gray', marginBottom: "30%" }}>밝기</Text>
+            </View>
           </Modal>
           <Modal visible={EnemyInteractionVisible} onDismiss={hideEnemyInteraction}
             contentContainerStyle={GamePlayModal}>
-               
             <View style={{
               ...StyleSheet.absoluteFill,
               justifyContent: 'space-evenly',
@@ -460,8 +410,6 @@ function ScoreEasy(){
               backgroundColor: '#5A5A5A',
               borderWidth: 3,
             }}>
-              <MaterialCommunityIcons style = {{flex: 0.23, marginRight: '80%', marginTop: '-10%'}} onPress = {hideEnemyInteraction}
-                             name="file-excel-box" size = {50} color='black' />
               <View>
               <Text style={{ fontSize: 20, textAlign: 'center' }}>James</Text>
               <MaterialCommunityIcons name="rectangle" size={70} color="black" />
@@ -577,111 +525,30 @@ function ScoreEasy(){
               <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }}/>
             </View>
             <View style={{ flex: 0.23, flexDirection: 'row', justifyContent: 'flex-end' }}>
-              <UpdateStatus_UnderBar/>
+              <UpdateStatus_UnderBar />
             </View>
           </View>
       </PaperProvider>
     );
   }
 
-  const purchaseItemModal = {
-    backgroundColor: 'white',
-    padding: 5,
-    height: "30%",
-    width: "70%",
-    marginLeft: "15%",
-    marginTop: "-15%",
-    alignItems: 'center',
-    justifyContent: 'center',
-};
-
   function ShopScene(){
     
-    const [purchaseItem1Visible, setpurchaseItem1Visible] = useState(false);
-    const showpurchaseItem1 = () => setpurchaseItem1Visible(true);
-    const hidepurchaseItem1 = () => setpurchaseItem1Visible(false);
-    
-    
-    const purchaseItem1 = () => {
-      if(money >= 2000)
-      money = money - 2000;
-      hidepurchaseItem1();
-    };
-    const sellItem1 = () => {
-      money = money + 200;
-      hidepurchaseItem1();
-    };
-  
+    const purchaseItem = () => {
+      
+  }
     return (
-      <PaperProvider theme={theme}>
-      <Portal>
-        <Modal visible={purchaseItem1Visible} onDismiss={hidepurchaseItem1}
-            contentContainerStyle={purchaseItemModal}>
-               
-            <View style={{
-              ...StyleSheet.absoluteFill,
-              justifyContent: 'space-evenly',
-              alignItems: 'center',
-              backgroundColor: '#5A5A5A',
-              borderWidth: 3,
-            }}>
-              <MaterialCommunityIcons style = {{flex: 1, marginRight: '80%'}} onPress = {hidepurchaseItem1}
-                             name="file-excel-box" size = {50} color='black'/>
-            <View style={{ flex: 1.3, alignItems: 'center', }}>
-            <Text style={styles.titleText}>지휘자 목걸이</Text>
-            <View style={{flexDirection: "row", alignItems: 'center', }}>
-            <MaterialCommunityIcons name="coin" size={25} color="black" />
-            <Text style={styles.titleText}> 2000</Text>
-            </View>
-            </View>
-            <View style={{ 
-              flex: 1.5,
-              justifyContent: 'space-evenly',
-              alignItems: 'center',
-              flexDirection: "row",
-              }}>
-              <View style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: "25%",
-                height: "60%",
-                backgroundColor: 'white',
-                borderWidth: 3,
-                marginHorizontal: '10%',
-              }}>
-                <Pressable onPress={purchaseItem1} style = {{...StyleSheet.absoluteFill, flex:1, justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{ fontSize: 20 }}>구입</Text>
-                </Pressable>
-              </View>
-              <View style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: "25%",
-                height: "60%",
-                backgroundColor: 'white',
-                borderWidth: 3,
-                marginHorizontal: '10%',
-              }}>
-                <Pressable onPress={sellItem1} style = {{...StyleSheet.absoluteFill, flex:1, justifyContent: 'center', alignItems: 'center'}}>
-                <Text style={{ fontSize: 20 }}>판매</Text>
-                </Pressable>
-              </View>
-              </View>
-            </View>
-          </Modal>
-      </Portal>
         <View style={{ flex: 7, justifyContent: "space-between", paddingTop: '10%'}}>
-         <Pressable onPress={showpurchaseItem1} style={styles.itembox}>
-            <Image source={require('./../../assets/item1.png')}  style={styles.itembox2} resizeMode="stretch"/>
+         <Pressable onPress = {purchaseItem} style={styles.itembox}>
+            <Image source={require('./../../assets/item1.png')} style={styles.itembox2} resizeMode="stretch"/>
           </Pressable>
           <Pressable style={styles.itembox}>
             <Image source={require('./../../assets/item2.png')}  style={styles.itembox2} resizeMode="stretch"/>
           </Pressable>
         <View style={{ flex: 0.37, flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <ShowStatus_UnderBar/>
+            <UpdateStatus_UnderBar/>
             </View>
             </View>
-            </PaperProvider>
       );
   }
 
@@ -690,7 +557,33 @@ function ScoreEasy(){
         <View style={{ flex: 7, justifyContent: "space-between",}}>
             <Image source={require('./../../assets/enhance.png')}  style={styles.enhancebox} resizeMode="stretch"/>
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-        <ShowStatus_UnderBar/>
+              <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '70%', height: '100%', backgroundColor: 'gray' }}>
+                  <DataTable>
+                  <DataTable.Row>
+                    <DataTable.Cell><Entypo name="stopwatch" size={25} color="black"/> <Text style={styles.titleText}>06:37</Text></DataTable.Cell>
+                  </DataTable.Row>
+                  <DataTable.Row>
+                    <DataTable.Cell><MaterialCommunityIcons name="coin" size={25} color="black"/> <Text style={styles.titleText}>3700</Text></DataTable.Cell>
+                  </DataTable.Row>
+                  </DataTable>
+                <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
+              </View>
+              <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '30%', height: '100%', backgroundColor: 'gray' }}>
+              <DataTable>
+                  <DataTable.Row>
+                    <DataTable.Cell>
+                        <MaterialCommunityIcons name="rectangle" size={25} color="red"/> <Text style={styles.titleText}>7</Text>
+                        </DataTable.Cell>
+                  </DataTable.Row>
+                  <DataTable.Row>
+                    <DataTable.Cell>
+                        <MaterialCommunityIcons name="rectangle" size={25} color="cyan"/> 
+                        <Text style={styles.titleText}> 5</Text>
+                        </DataTable.Cell>
+                  </DataTable.Row>
+                  </DataTable>
+                <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
+              </View>
             </View>
             </View>
       );

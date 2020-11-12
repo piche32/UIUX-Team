@@ -3,10 +3,11 @@ import React, {useState,} from 'react';
 import { Component } from 'react';
 import { StyleSheet, View, Image, Animated, ScrollView, Text, Dimensions } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import {Portal, Modal, Provider as PaperProvider} from 'react-native-paper';
+import {ToggleButton, Portal, Button, Modal, Provider as PaperProvider} from 'react-native-paper';
 import Bag from '../components/bag';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { roundToNearestPixel } from 'react-native/Libraries/Utilities/PixelRatio';
 const bagModalStyle = {
   backgroundColor: 'white',
   padding: 20,
@@ -183,11 +184,24 @@ function FlowerList(props) {
 }
 
 export default class BookScene extends React.Component {
+constructor(props){
+    super(props);
+  }
 
   render() {
+    const bookCategory = this.props.route.params.bookCategory;
+    const setBookCategory = (value)=> {
+      this.props.navigation.setParams({bookCategory: value});
+       console.log(bookCategory, "params: ", this.props);
+      }
     return (
       <View style={{ flex: 1 }}>
         <FlowerList name />
+        <ToggleButton.Row onValueChange={value => setBookCategory(value)} value={bookCategory}>
+          <ToggleButton icon="flower" value="flower"/>
+          <ToggleButton icon="pine-tree" value="tree"/>
+          <ToggleButton icon="ladybug" value="bug"/>
+        </ToggleButton.Row>
       </View>
     );
   }

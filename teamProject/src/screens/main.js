@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, Text, View, Button, ScrollView, Image, Pressable, Animated, Dimensions } from 'react-native';
+import { StyleSheet, View, Button, ScrollView, Image, Pressable, Animated, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider } from 'react-native-paper';
+import { DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, Text } from 'react-native-paper';
 import { MaterialIcons, Entypo } from '@expo/vector-icons';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Field from '../components/field';
@@ -82,7 +82,7 @@ const bottomBarModalStyle = {
   backgroundColor: 'white',
 };
 
-export default function MainScene({ navigation }) {
+export default function MainScene( { navigation, route }) {
   const [profileVisible, setProfileVisible] = useState(false);
   const showProfile = () => setProfileVisible(true);
   const hideProfile = () => setProfileVisible(false);
@@ -106,6 +106,14 @@ export default function MainScene({ navigation }) {
     navigation.navigate("Shop");
   }
 
+  //const [money, setMoneyValue] = useState(0);
+  const [flowerNum, setFlowerValue] = useState(0);
+  const [flowerMax, setFlowerMaxValue] = useState(3);
+  const [guardianNum, setGuardianValue] = useState(0);
+  const [guardianMax, setGuardianMaxValue] = useState(3);
+  const [flowerSpace, setFlowerSpace] = useState(0);
+  const [guardianSpace, setGuardianSpace] = useState(0);
+
   return (
     <PaperProvider theme={theme}>
       <View style={styles.mainSceneContainer}>
@@ -117,16 +125,16 @@ export default function MainScene({ navigation }) {
             <Text>추가 수입 0</Text>
             <Text>최대 밭 갯수 5</Text>
           </Modal>
-          <Setting visible={settingVisible} onDismiss={hideSetting}/>
+          <Setting visible={settingVisible} onDismiss={hideSetting} />
           <Modal visible={bagVisible} onDismiss={hideBag}
             contentContainerStyle={bagModalStyle}>
-              <Bag/>
-           
+            <Bag />
+
           </Modal>
           <Modal visible={bottomBarVisible} onDismiss={hideBottomBar}
             contentContainerStyle={bottomBarModalStyle}>
             <ScrollView style={styles.list}>
-              <WorkerUI/>
+              <WorkerUI />
             </ScrollView>
           </Modal>
 
@@ -149,11 +157,11 @@ export default function MainScene({ navigation }) {
             alignItems: 'center',
             flexWrap: 'wrap',
           }}>
-            <Pressable onPress={showProfile} style={{ backgroundColor: 'gray', }}>
+            <Pressable onPress={showProfile} >
               <Avatar.Text size={50} label='LV1' style={{ justifyContent: "center" }} />
             </Pressable>
 
-            <View style={{ alignSelf: 'center', borderColor: 'green', borderWidth: 1, marginTop: "5%" }}>
+            <View style={{ alignSelf: 'center', marginTop: "5%" }}>
               <MaterialCommunityIcons name="bag-personal" size={40} color='#A57939' onPress={showBag} />
             </View>
           </View>
@@ -165,24 +173,28 @@ export default function MainScene({ navigation }) {
             //borderWidth: 1,
             justifyContent: 'space-evenly',
           }}>
-            <View style={{ flex: 0.4, borderColor: 'pink', borderWidth: 1, flexDirection: 'row' }}>
+            <View style={{ flex: 0.4, flexDirection: 'row' }}>
               <MaterialCommunityIcons name="coin" size={24} color="black" />
               <View style={{ backgroundColor: 'gray', width: '70%', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: 'black' }}>99.99a</Text>
+                <Text style={{ color: 'black' }}>{route.params?.money}</Text>
               </View>
             </View>
-            <View style={{ flex: 0.4, borderColor: 'pink', borderWidth: 1, flexDirection: 'row' }}>
+            <View style={{ flex: 0.4, flexDirection: 'row' }}>
               <MaterialCommunityIcons name="flower" size={24} color="black" />
               <View style={{ backgroundColor: 'gray', width: '70%', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: 'black' }}>3/3</Text>
+                <Text style={{ color: 'black' }}>{flowerNum}/{flowerMax}</Text>
+              </View>
+            </View>
+            <View style={{ flex: 0.4, flexDirection: 'row' }}>
+              <MaterialCommunityIcons name="ladybug" size={24} color="black" />
+              <View style={{ backgroundColor: 'gray', width: '70%', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color: 'black' }}>{guardianNum}/{guardianMax}</Text>
               </View>
             </View>
           </View>
 
           <View style={{
             flex: 0.8,
-            borderWidth: 1,
-            borderColor: 'cyan',
             alignContent: 'center',
             alignItems: 'center'
           }}>
@@ -208,12 +220,14 @@ export default function MainScene({ navigation }) {
             ...StyleSheet.absoluteFill,
             flex: 1,
             position: 'absolute',
+            justifyContent: 'center',
+            alignContent: 'center',
+            //alignSelf: 'center',
+            alignItems: 'center',
           }}>
-            <Field fn = {showBag}/>
+            <Field fn={showBag} />
           </View>
-          <Pressable onPress={showBottomBar} style={{ alignSelf: 'center', width: '20%', height: '3%', backgroundColor: 'red' }}>
-            <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
-          </Pressable>
+          <Pressable onPress={showBottomBar} style={{ alignSelf: 'center', width: '20%', height: '3%', backgroundColor: 'red' }} />
         </View>
       </View>
     </PaperProvider>

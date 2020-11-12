@@ -20,6 +20,8 @@ export default class Setting extends Component {
         this.state = {
             BGMMuteIcon: 'volume-off',
             BGMValue: 0,
+            SoundEffectIcon: 'volume-off',
+            SoundEffectValue: 0,
         }
 
     }
@@ -29,6 +31,13 @@ export default class Setting extends Component {
     }
     setBGMValue = (BGMValue) => {
         this.setState({BGMValue: BGMValue});
+    }
+    
+    setSoundEffectIcon = (SoundEffectIcon) => {
+        this.setState({SoundEffectIcon: SoundEffectIcon});
+    }
+    setSoundEffectValue = (SoundEffectValue) => {
+        this.setState({SoundEffectValue: SoundEffectValue});
     }
     
     gestureHandler = (evt) => {
@@ -77,14 +86,35 @@ export default class Setting extends Component {
 
                 </View>
             </View>
-            <View style={[styles.setting, {marginBottom: '10%', borderWidth: 1,}]}>
-                <Text>Sound Effect</Text>
-                <View>
-                    <ProgressBar progress={0.5} color={Colors.purple200} />
-                    <View style={styles.soundValue}>
-                        <Text>0%</Text>
-                        <Text>100%</Text>
+            <View style={[styles.setting, { marginTop: '10%'}]}>
+                <Text style = {styles.settingText}>Sound Effect</Text>
+                <View style={styles.objects}>
+                    <View style={{ flex: 8,  marginTop: '5%', }}>
+                    <PanGestureHandler onGestureEvent={this.gestureHandler}>
+                        <View>
+                        <ProgressBar progress={this.state.SoundEffectValue} color={Colors.orange500} />
+                        
+                        </View>
+                        </PanGestureHandler>
+                        <View style={styles.soundValue}>
+                            <Text>0%</Text>
+                            <Text>100%</Text>
+                        </View>
                     </View>
+                        <Button icon={this.state.SoundEffectIcon} mode="text" 
+                        style = {{ borderColor: "red", width: '1%'}}
+                         onPress={() => {
+                            if(this.state.SoundEffectIcon === 'volume-off'){
+                                this.setSoundEffectIcon('volume-high');
+                            this.setSoundEffectValue(1);
+                            }
+                            else{
+                                this.setSoundEffectIcon('volume-off');
+                            this.setSoundEffectValue(0);
+                            }
+                        }} />
+
+
                 </View>
             </View>
         </Modal>
