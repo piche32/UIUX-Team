@@ -1,16 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState, useRef, version} from 'react';
-import { StyleSheet, Text, View, Button, Pressable, ScrollView, Image} from 'react-native';
+import React, {useState, useRef, version, useEffect} from 'react';
+import { StyleSheet, Text, View,  Pressable, ScrollView, Image} from 'react-native';
 import{NavigationContainer} from '@react-navigation/native';
 import{createStackNavigator} from '@react-navigation/stack';
 import{createDrawerNavigator} from '@react-navigation/drawer';
 import{MaterialCommunityIcons, MaterialIcons, Entypo, Octicons} from '@expo/vector-icons';
-import{DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, DataTable, List} from 'react-native-paper';
+import{DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, DataTable, Button, List} from 'react-native-paper';
 import{createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import { createNativeWrapper, TouchableHighlight } from 'react-native-gesture-handler';
 import { render } from 'react-dom';
-
+import ViewPager from '@react-native-community/viewpager';
 
 
 function StartScene({navigation}){
@@ -21,7 +21,7 @@ function StartScene({navigation}){
       <View style = {styles.startSceneContainer}>
         <MaterialCommunityIcons name="human-handsdown" size ={126} color="white"/>
         <MaterialCommunityIcons name="flower" size = {50} color='white'/>
-        <Button onPress={pressBT} title="START"/>
+        <Button onPress={pressBT} mode="contained" >START</Button>
       </View>
     );
   }
@@ -33,8 +33,8 @@ function StartScene({navigation}){
     return(
       <Stack.Navigator>
         <Stack.Screen name = "Main" component = {MainScene}/>
-        <Stack.Screen name = "Book" component = {BookScene}/>
         <Stack.Screen name = "Score" component = {ScoreScene}/>
+        <Stack.Screen name = "Tutorial" component = {TutorialScene}/>
       </Stack.Navigator>
     );
   }
@@ -58,48 +58,13 @@ const defaultModalStyle = {
     justifyContent: 'center',
 };
 
-const TutorialModalStyle = {
-  backgroundColor: 'white',
-  padding: 5,
-  height: "70%",
-  width: "70%",
-  marginLeft: "15%",
-  alignItems: 'flex-start',
-  justifyContent: 'flex-start',
-};
-
   function MainScene({ navigation }) {
     const [settingVisible, setSettingVisible] = useState(false);
     const showSetting = () => setSettingVisible(true);
     const hideSetting = () => setSettingVisible(false);
-
-    const [TutorialVisible1, setTutorialVisible1] = useState(false);
-    const [TutorialVisible2, setTutorialVisible2] = useState(false);
-    const [TutorialVisible3, setTutorialVisible3] = useState(false);
-    const [TutorialVisible4, setTutorialVisible4] = useState(false);
-    const [TutorialVisible5, setTutorialVisible5] = useState(false);
-    const showTutorial = () => setTutorialVisible1(true);
-    const hideTutorial = () => {
-      setTutorialVisible1(false);
-      setTutorialVisible2(false);
-      setTutorialVisible3(false);
-      setTutorialVisible4(false);
-      setTutorialVisible5(false);
-    }
-    const changeTutorialModal = () => {
-        if (TutorialVisible1) {
-            setTutorialVisible1(false);
-            setTutorialVisible2(true);
-        } else if (TutorialVisible2) {
-            setTutorialVisible2(false);
-            setTutorialVisible3(true);
-        } else if (TutorialVisible3) {
-            setTutorialVisible3(false);
-            setTutorialVisible4(true);
-        } else if (TutorialVisible4) {
-            setTutorialVisible4(false);
-            setTutorialVisible5(true);
-        } else{hideTutorial}
+    
+    const goToTutorial = () => {
+      navigation.navigate("Tutorial");
     }
     
     const [GameStartVisible, setGameStartVisible] = useState(false);
@@ -107,17 +72,16 @@ const TutorialModalStyle = {
     const hideGameStart = () => setGameStartVisible(false);
 
     const goToGamePlay = () => {
-      money = 1000;
+      money = 4000;
       playTime = 0;
       navigation.navigate("GamePlay");
   }
 
-    const drawerBook = () => {
-        navigation.navigate("Book");
-    }
     const goToScore = () => {
         navigation.navigate("Score");
     }
+
+
 
     const ref = useRef(null);
 
@@ -141,82 +105,7 @@ const TutorialModalStyle = {
                           
                           <Text style={{fontSize: 20, fontWeight: "bold", color: 'gray', marginBottom: "30%"}}>밝기</Text>
                           </View>
-                            
                     </Modal>
-                    <Modal visible={TutorialVisible1} onDismiss={changeTutorialModal}
-                        contentContainerStyle={TutorialModalStyle}>
-                            <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                             name="file-excel-box" size = {50} color='black'/>
-                            <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
-                            <MaterialCommunityIcons name="bug" size = {80} color='black'/>
-                            <Text style={styles.titleText}> Tutorial </Text>
-                            </View>
-                            <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                            <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>1. 게임의 목표</Text>
-                            <Text style={{fontSize: 19}}>상대방을 전부 섬멸, 혹은 항복 시켜 상대로부터 승리한다.</Text>
-                            </View>
-                    </Modal>
-                    <Modal visible={TutorialVisible2} onDismiss={changeTutorialModal}
-                        contentContainerStyle={TutorialModalStyle}>
-                          <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                        name="file-excel-box" size = {50} color='black'/>
-                       <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
-                       <MaterialCommunityIcons name="bug" size = {80} color='black'/>
-                       <Text style={styles.titleText}> Tutorial </Text>
-                       </View>
-                       <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                       <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>2. 상대방과 인터렉션</Text>
-                       <Text style={{fontSize: 18}}>플레이어는 암살과 포섭 총 두 가지 인터렉션이 가능하다. </Text>
-                       <Text/>
-                       <Text style={{fontSize: 18}}>이를 이용하여 상대보다 빠르게 상대 조직의 수를 줄이고, 플레이어의 조직원 수를 늘려야 한다.</Text>
-                       </View>
-                    </Modal>
-                    <Modal visible={TutorialVisible3} onDismiss={changeTutorialModal}
-                        contentContainerStyle={TutorialModalStyle}>
-                        <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                        name="file-excel-box" size = {50} color='black'/>
-                       <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
-                       <MaterialCommunityIcons name="bug" size = {80} color='black'/>
-                       <Text style={styles.titleText}> Tutorial </Text>
-                       </View>
-                       <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                       <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>3. 암살 / 포섭 하기</Text>
-                       <Text style={{fontSize: 18}}>플레이어는 원하는 상대 조직의 조직원을 터치해 터치한 조직원의 정보를 얻을 수 있다.</Text>
-                       <Text/>
-                       <Text style={{fontSize: 18}}>또한 이를 참고하여 자신의 자원을 소모하여 암살, 포섭를 할 수 있다.</Text>
-                       </View>
-                    </Modal>
-                    <Modal visible={TutorialVisible4} onDismiss={changeTutorialModal}
-                        contentContainerStyle={TutorialModalStyle}>
-                        <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                        name="file-excel-box" size = {50} color='black'/>
-                       <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
-                       <MaterialCommunityIcons name="bug" size = {80} color='black'/>
-                       <Text style={styles.titleText}> Tutorial </Text>
-                       </View>
-                       <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                       <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>4. 상점, 능력치</Text>
-                       <Text style={{fontSize: 17}}>게임에는 상점과 능력치가 존재한다.</Text>
-                       <Text/>
-                       <Text style={{fontSize: 17}}>상점에는 지속성 아이템과 소모성 아이템이 있고, 능력치는 플레이어가 강화한 능력치에 따라 게임의 플레이를 변화시킬 수 있다.</Text>
-                            </View>
-                    </Modal>
-                    <Modal visible={TutorialVisible5} onDismiss={hideTutorial}
-                        contentContainerStyle={TutorialModalStyle}>
-                        <MaterialCommunityIcons style = {{flex: 1.15}} onPress = {hideTutorial}
-                        name="file-excel-box" size = {50} color='black'/>
-                       <View style = {{flex: 2.5, justifyContent: 'center', alignItems: 'center', marginLeft: '32%'}}>
-                       <MaterialCommunityIcons name="bug" size = {80} color='black'/>
-                       <Text style={styles.titleText}> Tutorial </Text>
-                       </View>
-                       <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
-                       <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>5. 게임 즐기기</Text>
-                       <Text style={{fontSize: 18}}>게임을 재미있게 즐겨보자.</Text>
-                       <Text/>
-                       <Text style={{fontSize: 18}}>클리어타임을 줄이는 것을 목표로 하는 것도 하나의 방법.</Text>
-                            </View>
-                    </Modal>
-                    
                     <Modal visible={GameStartVisible} onDismiss={hideGameStart}
                         contentContainerStyle={defaultModalStyle}>
                             <MaterialCommunityIcons name="bug" size = {80} color='black'/>
@@ -230,22 +119,13 @@ const TutorialModalStyle = {
                     </Modal>
                 </Portal>
 
-                <Button title="최고 기록" onPress={goToScore} />
-                <Button title="환경 설정" onPress={showSetting} />
-                <Button title="게임 방법" onPress={showTutorial} />
-                <Button title="Game Start" onPress={showGameStart} />
-                <MaterialCommunityIcons onPress={drawerBook} name="book-multiple" size={50} color="brown" />
+                <Button onPress={goToScore} mode="contained">최고 기록</Button>
+                <Button onPress={showSetting} mode="contained">환경 설정</Button>
+                <Button onPress={goToTutorial} mode="contained">게임 방법</Button>
+                <Button onPress={showGameStart} mode="contained" style={{marginTop: '5%'}}>Game Start</Button>
             </View>
         </PaperProvider>
     );
-}
-
-function BookScene(){
-  return(
-    <View style = {styles.bookSceneContainer}>
-      <Text>Test</Text>
-    </View>
-  );
 }
 
 const BottomTab = createBottomTabNavigator();
@@ -260,8 +140,6 @@ function ScoreScene(){
         <TopTab.Screen name="Easy" component={ScoreEasy} />
         <TopTab.Screen name="Hard" component={ScoreHard} />
       </TopTab.Navigator>
-
-
       </View>
     );
 }
@@ -285,6 +163,95 @@ function ScoreEasy(){
     );
   }
 
+  
+  function TutorialScene(){
+    const [refViewPager, setrefViewPager] = useState({...ViewPager}); // react hook
+
+    return (
+      <PaperProvider theme={theme}>
+      <View style = {{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <MaterialCommunityIcons name="bug" size = {80} color='black'/>
+          <Text style={styles.titleText}> Tutorial </Text>
+          </View>
+      <ViewPager ref={(viewpager) => {setrefViewPager(viewpager)}} style={{flex: 4}} initialPage={0}>
+      <View key="0">
+          <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
+          <View style={{flex: 4, alignItems: 'center'}}>
+            <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>1. 게임의 목표</Text>
+            <Text style={{fontSize: 19, paddingHorizontal: '5%'}}>상대방을 전부 섬멸, 혹은 항복 시켜 상대로부터 승리한다.</Text>
+          </View>
+          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+          <Entypo name="arrow-bold-left" size = {40} color='gray' />
+          <Text style={{fontSize: 20, fontWeight: "bold", color: 'black'}}> 1 / 5 </Text>
+          <Entypo onPress={() => {refViewPager.setPage(1)}} name="arrow-bold-right" size = {40} color='black'/>
+          </View>
+        </View>
+      </View>
+          <View key="1">
+     <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
+     <View style={{flex: 4, alignItems: 'center'}}>
+     <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>2. 상대방과 인터렉션</Text>
+     <Text style={{fontSize: 19, paddingHorizontal: '5%'}}>플레이어는 암살과 포섭 총 두 가지 인터렉션이 가능하다. </Text>
+     <Text/>
+     <Text style={{fontSize: 19, paddingHorizontal: '5%'}}>이를 이용하여 상대보다 빠르게 상대 조직의 수를 줄이고, 플레이어의 조직원 수를 늘려야 한다.</Text>
+     </View>
+     <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+          <Entypo onPress={() => {refViewPager.setPage(0)}} name="arrow-bold-left" size = {40} color='black'/>
+          <Text style={{fontSize: 20, fontWeight: "bold", color: 'black'}}> 2 / 5 </Text>
+          <Entypo onPress={() => {refViewPager.setPage(2)}} name="arrow-bold-right" size = {40} color='black'/>
+      </View>
+     </View>
+     </View>
+     <View key="2">
+     <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
+     <View style={{flex: 4, alignItems: 'center'}}>
+     <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>3. 암살 / 포섭 하기</Text>
+     <Text style={{fontSize: 19, paddingHorizontal: '5%'}}>플레이어는 원하는 상대 조직의 조직원을 터치해 터치한 조직원의 정보를 얻을 수 있다.</Text>
+     <Text/>
+     <Text style={{fontSize: 19, paddingHorizontal: '5%'}}>또한 이를 참고하여 자신의 자원을 소모하여 암살, 포섭를 할 수 있다.</Text>
+     </View>
+     <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+          <Entypo onPress={() => {refViewPager.setPage(1)}} name="arrow-bold-left" size = {40} color='black'/>
+          <Text style={{fontSize: 20, fontWeight: "bold", color: 'black'}}> 3 / 5 </Text>
+          <Entypo onPress={() => {refViewPager.setPage(3)}} name="arrow-bold-right" size = {40} color='black'/>
+      </View>
+      </View>
+     </View>
+     <View key="3">
+     <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
+     <View style={{flex: 4, alignItems: 'center'}}>
+     <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>4. 상점, 능력치</Text>
+     <Text style={{fontSize: 19, paddingHorizontal: '5%'}}>게임에는 상점과 능력치가 존재한다.</Text>
+     <Text/>
+     <Text style={{fontSize: 19, paddingHorizontal: '5%'}}>상점에는 지속성 아이템과 소모성 아이템이 있고, 능력치는 플레이어가 강화한 능력치에 따라 게임의 플레이를 변화시킬 수 있다.</Text>
+     </View>
+     <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+          <Entypo onPress={() => {refViewPager.setPage(2)}} name="arrow-bold-left" size = {40} color='black'/>
+          <Text style={{fontSize: 20, fontWeight: "bold", color: 'black'}}> 4 / 5 </Text>
+          <Entypo onPress={() => {refViewPager.setPage(4)}} name="arrow-bold-right" size = {40} color='black'/>
+      </View>
+          </View>
+      </View>
+      <View key="4">
+     <View style = {{flex: 6.5, alignItems: 'center', marginTop: '5%',borderWidth: 4, backgroundColor: '#e0e0e0'}}>
+     <View style={{flex: 4, alignItems: 'center'}}>
+     <Text style={{fontSize: 20, fontWeight: "bold", color: 'black', margin: "5%"}}>5. 게임 즐기기</Text>
+     <Text style={{fontSize: 19, paddingHorizontal: '5%'}}>게임을 재미있게 즐겨보자.</Text>
+     <Text/>
+     <Text style={{fontSize: 19, paddingHorizontal: '5%'}}>클리어타임을 줄이는 것을 목표로 하는 것도 하나의 방법.</Text>
+     </View>
+     <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+          <Entypo onPress={() => {refViewPager.setPage(3)}} name="arrow-bold-left" size = {40} color='black'/>
+          <Text style={{fontSize: 20, fontWeight: "bold", color: 'black'}}> 5 / 5 </Text>
+          <Entypo name="arrow-bold-right" size = {40} color='gray'/>
+      </View>
+           </View>
+      </View>
+  </ViewPager>
+  </PaperProvider>
+      );
+  }
+
   const GamePlayModal = {
     backgroundColor: 'white',
     padding: 5,
@@ -299,7 +266,7 @@ function ScoreEasy(){
 
   const GamePlayStack = createStackNavigator();
 
-  var money = 1000;
+  var money = 4000;
   var playTime = 0;
 
   const updateGameState = () => {
@@ -595,23 +562,114 @@ function ScoreEasy(){
     justifyContent: 'center',
 };
 
+
+
+let canBuyItemNum = [1, 2];
+let canSellItemNum = [1];
+
   function ShopScene(){
     
+    const [purchaseItemlistVisible, setpurchaseItemlistVisible] = useState(true);
+    const showpurchaseItemlistVisible = () => setpurchaseItemlistVisible(true);
+    const showsellItemlistVisible = () => setpurchaseItemlistVisible(false);
+    useEffect( ()=> {}, [purchaseItemlistVisible]);
+
     const [purchaseItem1Visible, setpurchaseItem1Visible] = useState(false);
     const showpurchaseItem1 = () => setpurchaseItem1Visible(true);
     const hidepurchaseItem1 = () => setpurchaseItem1Visible(false);
-    
-    
+
+    const [sellItem1Visible, setSellItem1Visible] = useState(false);
+    const showSellItem1 = () => setSellItem1Visible(true);
+    const hideSellItem1 = () => setSellItem1Visible(false);
+
+    useEffect( ()=> {}, [canBuyItems]);
+    useEffect( ()=> {}, [canSellItems]);
+
+    let canBuyItemlist = [];
+    let canSellItemlist = [];
+
     const purchaseItem1 = () => {
-      if(money >= 2000)
+      if(money < 2000)
+        return;
       money = money - 2000;
+      
+      canSellItemNum.push(canBuyItemNum.splice(0,1)[0]);
+      pushCanBuyItemlist();
+      pushCanSellItemlist();
+      setcanBuyItems(canBuyItemlist);
+      setcanSellItems(canSellItemlist);
+      console.log(canBuyItemNum);
+      console.log(canSellItemNum);
       hidepurchaseItem1();
     };
+
     const sellItem1 = () => {
       money = money + 200;
-      hidepurchaseItem1();
+
+      canBuyItemNum.push(canSellItemNum.splice(0,1)[0]);
+      pushCanBuyItemlist();
+      pushCanSellItemlist();
+      setcanBuyItems(canBuyItemlist);
+      setcanSellItems(canSellItemlist);
+      console.log(canBuyItemNum);
+      console.log(canSellItemNum);
+      hideSellItem1();
     };
+
+
+    const pushCanBuyItemlist = () => {
+    canBuyItemlist.splice(0);
+    var indexnumber = 0;    
+    canBuyItemNum.forEach((number) => {
+      switch(number)
+      {
+      case 1: 
+      canBuyItemlist.push(
+        <Pressable onPress={showpurchaseItem1} style={styles.itembox} key={indexnumber}> 
+        <Image source={require('./../../assets/item1.png')}  style={styles.itembox2} resizeMode="stretch"/>
+      </Pressable>);
+            break;
+      case 2: 
+      canBuyItemlist.push(
+        <Pressable onPress={showpurchaseItem1} style={styles.itembox} key={indexnumber}>
+              <Image source={require('./../../assets/item2.png')}  style={styles.itembox2} resizeMode="stretch"/>
+            </Pressable>);
+
+            break;
+      }
+      indexnumber++;
+    });
+  }
   
+  const pushCanSellItemlist = () => {
+    canSellItemlist.splice(0);
+    var indexnumber = 0;
+    canSellItemNum.forEach((number) => {
+      switch(number)
+      {
+      case 1: 
+      canSellItemlist.push(
+        <Pressable onPress={showSellItem1} style={styles.itembox} key={indexnumber}> 
+        <Image source={require('./../../assets/item1.png')}  style={styles.itembox2} resizeMode="stretch"/>
+      </Pressable>);
+            break;
+      case 2: 
+      canSellItemlist.push(
+        <Pressable onPress={showSellItem1} style={styles.itembox} key={indexnumber}>
+              <Image source={require('./../../assets/item2.png')}  style={styles.itembox2} resizeMode="stretch"/>
+            </Pressable>);
+
+            break;
+      }
+      indexnumber++;
+    });
+  }
+    
+  pushCanBuyItemlist();
+  const [canBuyItems, setcanBuyItems] = useState(canBuyItemlist);
+
+  pushCanSellItemlist();
+  const [canSellItems, setcanSellItems] = useState(canSellItemlist);
     return (
       <PaperProvider theme={theme}>
       <Portal>
@@ -662,8 +720,62 @@ function ScoreEasy(){
                 borderWidth: 3,
                 marginHorizontal: '10%',
               }}>
+                <Pressable onPress={hidepurchaseItem1} style = {{...StyleSheet.absoluteFill, flex:1, justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{ fontSize: 20 }}>취소</Text>
+                </Pressable>
+              </View>
+              </View>
+            </View>
+          </Modal>
+          <Modal visible={sellItem1Visible} onDismiss={hideSellItem1}
+            contentContainerStyle={purchaseItemModal}>
+               
+            <View style={{
+              ...StyleSheet.absoluteFill,
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+              backgroundColor: '#5A5A5A',
+              borderWidth: 3,
+            }}>
+              <MaterialCommunityIcons style = {{flex: 1, marginRight: '80%'}} onPress = {hideSellItem1}
+                             name="file-excel-box" size = {50} color='black'/>
+            <View style={{ flex: 1.3, alignItems: 'center', }}>
+            <Text style={styles.titleText}>지휘자 목걸이</Text>
+            <View style={{flexDirection: "row", alignItems: 'center', }}>
+            <MaterialCommunityIcons name="coin" size={25} color="black" />
+            <Text style={styles.titleText}> 2000</Text>
+            </View>
+            </View>
+            <View style={{ 
+              flex: 1.5,
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+              flexDirection: "row",
+              }}>
+              <View style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: "25%",
+                height: "60%",
+                backgroundColor: 'white',
+                borderWidth: 3,
+                marginHorizontal: '10%',
+              }}>
                 <Pressable onPress={sellItem1} style = {{...StyleSheet.absoluteFill, flex:1, justifyContent: 'center', alignItems: 'center'}}>
                 <Text style={{ fontSize: 20 }}>판매</Text>
+                </Pressable>
+              </View>
+              <View style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: "25%",
+                height: "60%",
+                backgroundColor: 'white',
+                borderWidth: 3,
+                marginHorizontal: '10%',
+              }}>
+                <Pressable onPress={hideSellItem1} style = {{...StyleSheet.absoluteFill, flex:1, justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{ fontSize: 20 }}>취소</Text>
                 </Pressable>
               </View>
               </View>
@@ -671,13 +783,12 @@ function ScoreEasy(){
           </Modal>
       </Portal>
         <View style={{ flex: 7, justifyContent: "space-between", paddingTop: '10%'}}>
-         <Pressable onPress={showpurchaseItem1} style={styles.itembox}>
-            <Image source={require('./../../assets/item1.png')}  style={styles.itembox2} resizeMode="stretch"/>
-          </Pressable>
-          <Pressable style={styles.itembox}>
-            <Image source={require('./../../assets/item2.png')}  style={styles.itembox2} resizeMode="stretch"/>
-          </Pressable>
-        <View style={{ flex: 0.37, flexDirection: 'row', justifyContent: 'flex-end' }}>
+         { (purchaseItemlistVisible == true) ? canBuyItems : canSellItems}
+          <View style={{ flex: 0.15, flexDirection: 'row', justifyContent: 'space-evenly'}}>
+          <Button onPress={showpurchaseItemlistVisible} mode="contained">구입</Button>
+          <Button onPress={showsellItemlistVisible} mode="contained">판매</Button>
+          </View>
+        <View style={{ flex: 0.37, flexDirection: 'row'}}>
             <ShowStatus_UnderBar/>
             </View>
             </View>
