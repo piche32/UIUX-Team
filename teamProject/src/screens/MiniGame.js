@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState, useRef, version, useEffect} from 'react';
-import { StyleSheet, Text, View,  Pressable, ScrollView, Image} from 'react-native';
+import { StyleSheet, Text, View,  Pressable, ScrollView, Image, TouchableWithoutFeedback } from 'react-native';
 import{NavigationContainer} from '@react-navigation/native';
 import{createStackNavigator} from '@react-navigation/stack';
 import{createDrawerNavigator} from '@react-navigation/drawer';
@@ -8,9 +8,10 @@ import{MaterialCommunityIcons, MaterialIcons, Entypo, Octicons} from '@expo/vect
 import{DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, DataTable, Button, List} from 'react-native-paper';
 import{createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { createNativeWrapper, TouchableHighlight } from 'react-native-gesture-handler';
+import { createNativeWrapper, TouchableHighlight,PanGestureHandler } from 'react-native-gesture-handler';
 import { render } from 'react-dom';
 import ViewPager from '@react-native-community/viewpager';
+import Animated, { Easing, useSharedValue, useDerivedValue, interpolateColors, withSpring, useAnimatedStyle, repeat, delay, useAnimatedGestureHandler, withTiming, sequence, EasingNode, cancelAnimation } from 'react-native-reanimated';
 
 
 function StartScene({navigation}){
@@ -376,6 +377,135 @@ function ScoreEasy(){
     );
   }
 
+
+
+  const Box = (props) => {
+    console.log('Box', props);
+    const x = useSharedValue(0);
+    const y = useSharedValue(0);
+    const color = useSharedValue("cyan");
+    const scale = useSharedValue(1);
+    const [active, setActive] = useState(false);
+  
+    useEffect( ()=> {
+        activate( props.active);
+        if(active == false)
+          jump(); 
+        setTimeout( ()=> {
+          props.cleanupAction();
+      }, 200);
+    }, [props.active]);
+        
+    const jump = () => {
+        //x.value = withTiming(x.value + 10, {duration: 200, ease: Easing.linear});
+        //y.value = repeat(withTiming(y.value-80, { duration: 100}), 2, true);
+        scale.value = sequence(withTiming(scale.value+0.3, { duration: 100}), withTiming(scale.value, { duration: 100}));  //위의 repeat과 같은 동작
+    }
+  
+    const setColor = (c)=> color.value = c;
+  
+    const activate = (newActive=true)=> {
+        setColor(newActive ? "orange" : "cyan");
+        setActive(newActive);
+    }
+    
+    const panHandler = useAnimatedGestureHandler( {
+        onStart: (_, ctx) => {
+            ctx.startX = x.value;
+            ctx.startY = y.value;
+            ctx.dragged = false;
+        },
+        onActive: (event, ctx) => {
+            if (ctx.dragged == false) {
+                ctx.dragged = true;
+                /* dragging을 처음 시작하게 된다면 */               
+            }
+            x.value = ctx.startX + event.translationX;
+            y.value = ctx.startY + event.translationY;
+        },
+        onFinish: (_, ctx) => {
+            if (ctx.dragged == true) {
+                /* dragging을 했다면 */
+            }
+        }
+    });
+  
+    const onTap = () => {
+        //jump();
+        props.activate(!active);
+    }
+  
+    const animatedStyle = useAnimatedStyle( ()=> {
+        return {
+            borderRadius: 5,
+            elevation: 10,
+            backgroundColor: color.value,
+            left: props.left,
+            top: props.top,
+            transform: [ 
+                {translateX: x.value },
+                {translateY: y.value },
+                {scale: scale.value }
+            ]
+        }
+    });
+    return (
+            <Animated.View style={[{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }, animatedStyle]} >
+                <TouchableWithoutFeedback 
+                    onPress = {onTap}>
+                    <View style={{ ...StyleSheet.absoluteFill}}>
+                    <Text style = {styles.titleText}>Player</Text>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Animated.View>
+    );
+  }
+  
+  const Boxes = (props) => {
+    const [boxes, setBoxes] = useState([{
+        name: 'box 1',
+        left: 0, top: 0, width: 100, height: 100, active: false
+    }
+    ]); // react hook
+  
+    const cleanupAction = () => {
+      let myBoxes = [ ...boxes ]; // spread operator ...
+        myBoxes.forEach( (box)=> {
+            if (box.active == true) 
+                box.active = false;            
+        });
+        setBoxes(myBoxes);
+      //setBox({...box, action: null});
+    }
+  
+    const activate = (name, newActive)=> {
+        let myBoxes = [ ...boxes ]; // spread operator ...
+        myBoxes.forEach( (box)=> {
+            if (box.name == name) 
+                box.active = newActive;            
+        });
+        setBoxes(myBoxes);
+    }
+  
+    let boxesRender = [];
+    for (let i = 0; i < boxes.length; i++) {
+        let box = boxes[i];
+        boxesRender.push( <Box name={box.name} key={box.name}
+            left={box.left} top={box.top} 
+            width={box.width} height={box.height}
+            active={box.active} action={box.action}
+            cleanupAction={cleanupAction}
+            activate={(flag)=> activate(box.name, flag)}
+            />
+        );
+    }
+  
+    return ( 
+      <View style={{ alignSelf: 'center', width: '20%', height: '15%', backgroundColor: "cyan" }}>
+        { boxesRender }
+      </View>
+  );}
+
   function GamePlayMainScene({navigation}){
     
     const [settingVisible, setSettingVisible] = useState(false);
@@ -539,10 +669,11 @@ function ScoreEasy(){
             <Text style = {styles.titleText}>Enemy</Text>
               <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }}/>
             </Pressable>
-            <View style={{ alignSelf: 'center', width: '20%', height: '15%', backgroundColor: "cyan" }}>
+            {/* <View style={{ alignSelf: 'center', width: '20%', height: '15%', backgroundColor: "cyan" }}>
             <Text style = {styles.titleText}>Player</Text>
               <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }}/>
-            </View>
+            </View> */}
+            <Boxes />
             <View style={{ flex: 0.23, flexDirection: 'row', justifyContent: 'flex-end' }}>
               <UpdateStatus_UnderBar/>
             </View>
@@ -563,10 +694,8 @@ function ScoreEasy(){
 };
 
 
-
 let canBuyItemNum = [1, 2];
 let canSellItemNum = [1];
-
   function ShopScene(){
     
     const [purchaseItemlistVisible, setpurchaseItemlistVisible] = useState(true);
@@ -782,9 +911,11 @@ let canSellItemNum = [1];
             </View>
           </Modal>
       </Portal>
-        <View style={{ flex: 7, justifyContent: "space-between", paddingTop: '10%'}}>
+        <View style={{ flex: 7, justifyContent: "space-between",}}>
+          <View style={{...styles.itembox, flex:1.8, justifyContent: "space-evenly" }}>
          { (purchaseItemlistVisible == true) ? canBuyItems : canSellItems}
-          <View style={{ flex: 0.15, flexDirection: 'row', justifyContent: 'space-evenly'}}>
+         </View>
+          <View style={{ flex: 0.3, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
           <Button onPress={showpurchaseItemlistVisible} mode="contained">구입</Button>
           <Button onPress={showsellItemlistVisible} mode="contained">판매</Button>
           </View>
