@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Button, ScrollView, Image, Pressable, Animated, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, Text } from 'react-native-paper';
@@ -8,6 +8,7 @@ import Field from '../components/field';
 import BookScene from './book';
 import Bag from '../components/bag';
 import Setting from '../components/setting';
+import * as SecureStore from 'expo-secure-store';
 
 function WorkerUI(props) {
   return (
@@ -67,6 +68,13 @@ const profileModalStyle = {
   width: "70%",
   marginLeft: "15%",
 };
+const detailModalStyle = {
+  backgroundColor: 'white',
+  padding: 20,
+  height: "50%",
+  width: "50%",
+  marginLeft: "25%",
+};
 
 const bagModalStyle = {
   backgroundColor: 'white',
@@ -82,6 +90,67 @@ const bottomBarModalStyle = {
   backgroundColor: 'white',
 };
 
+
+
+const MyObj = (props) => {
+  return (
+    <View>{props.obj}</View>
+  );
+}
+
+const Island = (props) => {
+  const [island, setIsland] = useState([ ])
+
+  const readObj = async () => {
+    try
+    {
+      const data = await SecureStore.getItemAsync("island");
+      console.log('value of data: ', data);
+  
+      if(data){
+        const myJson = JSON.parse(data);
+        setIsland([...island, myJson]);
+      }
+    }
+    catch(e) {
+      console.log(e);
+    }
+  };
+
+  const save = async (newObj) => {
+    try{
+        await SecureStore.setItemAsync("island", JSON.stringiify(newObj));
+    }
+    catch(e){
+      console.log(e);
+    }
+  };
+
+  save(
+    {
+      obj: <Field style={{position: 'absolute', bottom: 0, right: 0, zIndex: 100}}
+       showBag={props.showBag} setUsedScreen={()=>props.setUsedScreen("field")} key="field"/>,
+    });
+
+    readObj();
+
+  let islandRender =[];
+  for(let i =0; i< island.length; i++){
+    let object = island[i];
+    islandRender.push(
+        <MyObj obj={[object.obj]} key={object.obj.key}/>
+    );
+  }
+
+
+  return (
+    <View key = "islandContainer" >
+      {islandRender}
+
+    </View>
+  )
+}
+
 export default function MainScene( { navigation, route }) {
   const [profileVisible, setProfileVisible] = useState(false);
   const showProfile = () => setProfileVisible(true);
@@ -94,6 +163,10 @@ export default function MainScene( { navigation, route }) {
   const [bagVisible, setBagVisible] = useState(false);
   const showBag = () => setBagVisible(true);
   const hideBag = () => setBagVisible(false);
+
+  const [detailVisible, setDetailVisible] = useState(false);
+  const showDetail = () => setDetailVisible(true);
+  const hideDetail = () => setDetailVisible(false);
 
   const [bottomBarVisible, setBottomBarVisible] = useState(false);
   const showBottomBar = () => setBottomBarVisible(true);
@@ -114,9 +187,15 @@ export default function MainScene( { navigation, route }) {
   const [flowerSpace, setFlowerSpace] = useState(0);
   const [guardianSpace, setGuardianSpace] = useState(0);
 
+  const [detailObject, setDetailObject] = useState(null);
+  const [usedScreen, setUsedScreen] = useState(null);
+
   return (
     <PaperProvider theme={theme}>
+        
       <View style={styles.mainSceneContainer}>
+      <Island style={{flex: 1,  position: 'absolute'}} showBag={showBag} hideDetail={hideDetail} hideBag={hideBag} setUsedScreen={setUsedScreen} key={"island"}/>
+
         <Portal>
           <Modal visible={profileVisible} onDismiss={hideProfile}
             contentContainerStyle={profileModalStyle}>
@@ -128,8 +207,10 @@ export default function MainScene( { navigation, route }) {
           <Setting visible={settingVisible} onDismiss={hideSetting} />
           <Modal visible={bagVisible} onDismiss={hideBag}
             contentContainerStyle={bagModalStyle}>
-            <Bag />
-
+           <Bag usedScreen ={usedScreen} showDetail={showDetail} setDetailObject={setDetailObject} hideDetail={hideDetail} hideBag={hideBag} readObj={Island.readObj}/>
+          </Modal>
+          <Modal visible={detailVisible} onDismiss={hideDetail} contentContainerStyle={detailModalStyle}>
+            {detailObject}
           </Modal>
           <Modal visible={bottomBarVisible} onDismiss={hideBottomBar}
             contentContainerStyle={bottomBarModalStyle}>
@@ -162,7 +243,7 @@ export default function MainScene( { navigation, route }) {
             </Pressable>
 
             <View style={{ alignSelf: 'center', marginTop: "5%" }}>
-              <MaterialCommunityIcons name="bag-personal" size={40} color='#A57939' onPress={showBag} />
+              <MaterialCommunityIcons name="bag-personal" size={40} color='#A57939' onPress={()=>{showBag();setUsedScreen("main");}} />
             </View>
           </View>
           <View style={{
@@ -225,11 +306,15 @@ export default function MainScene( { navigation, route }) {
             //alignSelf: 'center',
             alignItems: 'center',
           }}>
-            <Field fn={showBag} />
+           
+          <Field showBag={showBag} setUsedScreen={()=>setUsedScreen("field")} key="field"/>
           </View>
           <Pressable onPress={showBottomBar} style={{ alignSelf: 'center', width: '20%', height: '3%', backgroundColor: 'red' }} />
         </View>
+
       </View>
+
+      
     </PaperProvider>
   );
 }
@@ -237,7 +322,7 @@ export default function MainScene( { navigation, route }) {
 const styles = StyleSheet.create({
   mainSceneContainer: {
     marginTop: '6%',
-    flex: 1,
+   flex: 1,
     backgroundColor: '#fff',
   },
   list: {

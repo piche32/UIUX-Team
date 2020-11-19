@@ -36,9 +36,16 @@ export default class Field extends React.Component {
 
     }
   };
+
   render() {
       
-    const { fn } = this.props;
+    const { showBag } = this.props;
+    const {setUsedScreen} = this.props;
+
+    const pressField = () => {
+      showBag();
+      setUsedScreen();
+    }
 
     let circleTransformStyle
     circleTransformStyle = {
@@ -64,7 +71,7 @@ export default class Field extends React.Component {
           ]}>
               <Text style = {{textAlign: "center"}}>Field</Text>
               <Pressable
-                  onPress = { fn }
+                  onPress = { pressField }
                   style = {{...StyleSheet.absoluteFill}}
                   >
               </Pressable>
@@ -78,8 +85,8 @@ export default class Field extends React.Component {
     field:
     {
         ...StyleSheet.absoluteFill,
-        width: '20%',
-        height: '15%',
+        width:100, //'20%',
+        height: 100,//'15%',
         backgroundColor: 'cyan',
         borderWidth: 2,
         justifyContent: 'center',

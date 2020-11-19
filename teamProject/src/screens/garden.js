@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -28,21 +28,14 @@ export default class Gardens extends React.Component {
     super(props);
     this.state = {
       money: 9000,
-      flowerSpacies: 0,
-      flowerMaxSpacies: 100,
-      treeSpacies: 0,
-      treeMaxSpacies: 30,
-      bugSpacies: 0,
-      bugMaxSpacies: 25,
-      bookCategory: 'flower',
-      bookIcon: null,
     };
   }
 
   changeCategory = () => {
-    console.log(this.state.bookIcon);
+    console.log("Icon: ", this.state.bookIcon);
+    let icon = null;
     if (this.state.bookCategory === 'flower') {
-      this.state.bookIcon = <View style={{
+      icon = <View style={{
         paddingRight: '15%',
         flexDirection: 'row',
         justifyContent: 'center',
@@ -62,7 +55,7 @@ export default class Gardens extends React.Component {
       </View>
     }
     else if (this.state.bookCategory === 'tree') {
-      this.state.bookIcon = <View style={{
+      icon = <View style={{
         paddingRight: '15%',
         flexDirection: 'row',
         justifyContent: 'center',
@@ -82,7 +75,7 @@ export default class Gardens extends React.Component {
       </View>
     }
     else if (this.state.bookCategory === 'bug') {
-      this.state.bookIcon = <View style={{
+      icon = <View style={{
         paddingRight: '15%',
         flexDirection: 'row',
         justifyContent: 'center',
@@ -101,11 +94,11 @@ export default class Gardens extends React.Component {
         </View>
       </View>
     }
+    this.state.bookIcon = icon;
   }
 
 
   render() {
-    this.changeCategory();
     
     return (
       <NavigationContainer>
@@ -114,13 +107,10 @@ export default class Gardens extends React.Component {
           <Stack.Screen name="Main" component={MainScene} initialParams={{ money: this.state.money }} options={{
             title: "", headerShown: false
           }} />
-          <Stack.Screen name="Book" component={BookScene} initialParams={{ bookCategory: this.state.bookCategory}}
-            options={{
+          <Stack.Screen name="Book" component={BookScene}
+            options={({navigation,route})=> ({
               headerTitleAlign: 'center',
-              headerRight: () => (
-                this.state.bookIcon
-              )
-            }} />
+            })} />
           <Stack.Screen name="Shop" component={ShopScene} initialParams={{ money: this.state.money }}
             options={{
               headerTitleAlign: 'center',
@@ -150,48 +140,6 @@ export default class Gardens extends React.Component {
     );
   }
 }
-
-
-/*export default function Gardens() {
-  const [money, setMoney] = useState(9000);
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Title" component={TitleScene} options={{ headerShown: false }} />
-        <Stack.Screen name="Main" component={MainScene} initialParams ={{money : money}} options={{
-          title: "", headerShown: false
-        }} />
-        <Stack.Screen name="Book" component={BookScene} options={{
-          headerTitleAlign: 'center',
-        }} />
-        <Stack.Screen name="Shop" component={ShopScene} initialParams ={{money : money, setMoney : setMoney}} options={{
-          headerTitleAlign: 'center',
-          headerRight: () => (
-            <View style={{
-              //flex: 1,
-              paddingRight: '15%',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignContent: 'center',
-              alignItems: 'center'
-            }}>
-              <MaterialCommunityIcons name="coin" size={24} color="black" />
-              <View style={{
-                backgroundColor: 'gray',
-                width: '100%',
-                justifyContent: 'center',
-                alignContent: 'center',
-                alignItems: 'center',
-              }}>
-                <Text style={{ color: 'black' }}>{money}</Text>
-              </View>
-            </View>
-          )
-        }} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}*/
 
 const styles = StyleSheet.create({
   titleSceneContainer: {

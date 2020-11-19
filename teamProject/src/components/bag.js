@@ -1,83 +1,123 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 
-import { StyleSheet, View,ScrollView, Dimensions, Image } from 'react-native';
-
-
+import {Pressable, StyleSheet, View, ScrollView, Dimensions, Image, TouchableWithoutFeedback } from 'react-native';
+import {DefaultTheme, Text, Modal, Provider as PaperProvider, Portal, Button} from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
 
-export default function Bag() {
+
+
+
+const Item = (props) => {
+    let detail = null;
+    const useSeed = () => {
+        props.hideDetail();
+        props.hideBag();
+        addSeed();
+        props.readObj();
+    }
+
+    const addSeed = async () =>{
+        const newSeed = { obj: <View key={"seed"}>
+            <Image source={require('../../assets/mushroom.png')}/>
+        </View>};
+        try{
+            await SecureStore.setItemAsync(
+                "island", JSON.stringify(newSeed)
+            );
+        }catch(e){
+            console.log(e);
+        }
+    };
+
+
+    const pressed = () => {
+        console.log(props);
+        switch(props.usedScreen){
+            case "main":
+                detail = <View>
+                    <Text style={{fontWeight: 'bold'}}>{props.name}</Text>
+                    <Text>{props.detail}</Text>
+                </View>
+                break;
+            case "field":
+                detail = <View>
+                    <Text style={{fontWeight: 'bold'}}>{props.name}</Text>
+                    <Text>{props.detail}</Text>
+                    <Button mode="contained" onPress={useSeed}>사용</Button>
+                </View>
+                break;
+
+        }
+        props.setDetailObject(detail);
+        console.log(detail);
+        if(detail != null)
+            props.showDetail();
+    }
+
+
+
+    return (
+        <View>
+            <Pressable style={{ backgroundColor: 'gray' }} onPress={pressed}>
+                {props.icon}
+            </Pressable>
+            {detail}
+        </View>
+    );
+}
+
+const Items = (props) => {
+    const [items, setItems] = useState([{
+        name: 'Sun Flower Seed',
+        key: 'seed',
+        icon:  <MaterialCommunityIcons name="seed" size={50} color="black" />,
+        usedScreen: props.usedScreen,
+        index: 0,
+        growTime: 5000,
+        detail: "Growing Time: 5s",
+        showDetail: props.showDetail,
+        setDetailObject: props.setDetailObject,
+        hideDetail: props.hideDetail,
+        hideBag: props.hideBag,
+        readObj: props.readObj,
+        }, 
+]);
+
+
+    let itemsRender=[];
+    for(let i = 0; i < items.length; i++){
+        let item = items[i];
+
+        itemsRender.push(
+            <Item
+                name={item.name} key={item.key} icon={item.icon}
+                usedScreen={item.usedScreen} index={item.index} 
+                growTime={item.growTime}
+                detail={item.detail} showDetail={item.showDetail}
+                setDetailObject={item.setDetailObject}
+                hideDetail={item.hideDetail}
+                hideBag={item.hideBag}
+                readObj={item.readObj}
+
+            />);
+    }
+
+    return (
+    <View key = "itemContainer" style={styles.list}>  
+        {itemsRender}
+    </View>
+    );
+}
+
+
+
+export default function Bag(props) {
     return (
         <View style={styles.bagList}>
-            
-            <ScrollView style={styles.list}>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', backgroundColor: 'gray', width: '100%' }}>
-                    <View style={styles.item}>
-                    <MaterialCommunityIcons name="seed" size={24} color="black" />
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', backgroundColor: 'gray', width: '100%' }}>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', backgroundColor: 'gray', width: '100%' }}>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', backgroundColor: 'gray', width: '100%' }}>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', backgroundColor: 'gray', width: '100%' }}>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', backgroundColor: 'gray', width: '100%' }}>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', backgroundColor: 'gray', width: '100%' }}>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly', backgroundColor: 'gray', width: '100%' }}>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                    <View style={styles.item}>
-                    </View>
-                </View>
-
-
-            </ScrollView>
+            <Items usedScreen={props.usedScreen} showDetail={props.showDetail}
+             setDetailObject={props.setDetailObject}
+             hideDetail={props.hideDetail} hideBag={props.hideBag} readObj={props.readObj}  />
         </View>
     );
 }
@@ -86,15 +126,10 @@ export default function Bag() {
 const styles = StyleSheet.create({
     bagList: {
         flex: 1,
-        backgroundColor: '#fff',
-
     },
     list: {
         flex: 1,
-        backgroundColor: 'gray',
-        flexWrap: 'wrap',
-        //alignItems: 'center',
-        //justifyContent: 'space-around',
+        //flexWrap: 'wrap',
     },
     item: {
         //flex: 1,
