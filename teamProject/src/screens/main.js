@@ -8,7 +8,6 @@ import Field from '../components/field';
 import BookScene from './book';
 import Bag from '../components/bag';
 import Setting from '../components/setting';
-import * as SecureStore from 'expo-secure-store';
 
 function WorkerUI(props) {
   return (
@@ -90,8 +89,6 @@ const bottomBarModalStyle = {
   backgroundColor: 'white',
 };
 
-
-
 const MyObj = (props) => {
   return (
     <View>{props.obj}</View>
@@ -99,50 +96,21 @@ const MyObj = (props) => {
 }
 
 const Island = (props) => {
-  const [island, setIsland] = useState([ ])
-
-  const readObj = async () => {
-    try
+  const [island, setIsland] = useState([
     {
-      const data = await SecureStore.getItemAsync("island");
-      console.log('value of data: ', data);
-  
-      if(data){
-        const myJson = JSON.parse(data);
-        setIsland([...island, myJson]);
-      }
-    }
-    catch(e) {
-      console.log(e);
-    }
-  };
-
-  const save = async (newObj) => {
-    try{
-        await SecureStore.setItemAsync("island", JSON.stringiify(newObj));
-    }
-    catch(e){
-      console.log(e);
-    }
-  };
-
-  save(
-    {
-      obj: <Field style={{position: 'absolute', bottom: 0, right: 0, zIndex: 100}}
-       showBag={props.showBag} setUsedScreen={()=>props.setUsedScreen("field")} key="field"/>,
-    });
-
-    readObj();
+      obj: <Field style={{position: 'absolute', bottom: 0, right: 0, zIndex: 100}} showBag={props.showBag} setUsedScreen={()=>props.setUsedScreen("field")} key="field"/>,
+    },
+  ])
 
   let islandRender =[];
   for(let i =0; i< island.length; i++){
     let object = island[i];
     islandRender.push(
-        <MyObj obj={[object.obj]} key={object.obj.key}/>
+        <MyObj
+          obj={object.obj}
+        />
     );
   }
-
-
   return (
     <View key = "islandContainer" >
       {islandRender}
@@ -207,7 +175,7 @@ export default function MainScene( { navigation, route }) {
           <Setting visible={settingVisible} onDismiss={hideSetting} />
           <Modal visible={bagVisible} onDismiss={hideBag}
             contentContainerStyle={bagModalStyle}>
-           <Bag usedScreen ={usedScreen} showDetail={showDetail} setDetailObject={setDetailObject} hideDetail={hideDetail} hideBag={hideBag} readObj={Island.readObj}/>
+           <Bag usedScreen ={usedScreen} showDetail={showDetail} setDetailObject={setDetailObject} hideDetail={hideDetail} hideBag={hideBag}/>
           </Modal>
           <Modal visible={detailVisible} onDismiss={hideDetail} contentContainerStyle={detailModalStyle}>
             {detailObject}
