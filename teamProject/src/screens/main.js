@@ -1,13 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Button, ScrollView, Image, Pressable, Animated, Dimensions } from 'react-native';
+import { StyleSheet, View, Button, ScrollView, Image, Pressable, Dimensions, AsyncStorage } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, Text } from 'react-native-paper';
 import { MaterialIcons, Entypo } from '@expo/vector-icons';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+
 import Field from '../components/field';
+import Flower from '../components/flower';
 import BookScene from './book';
 import Bag from '../components/bag';
 import Setting from '../components/setting';
+import * as SecureStore from 'expo-secure-store';
+
 
 function WorkerUI(props) {
   return (
@@ -89,37 +94,230 @@ const bottomBarModalStyle = {
   backgroundColor: 'white',
 };
 
+
 const MyObj = (props) => {
+  const [comp, setComp] = useState(null);
+
+  const x = useSharedValue(props.object.x);
+  const y = useSharedValue(props.object.y);
+
+  const backgroundColor = useSharedValue('green');
+
+  const panHandler = useAnimatedGestureHandler({
+    onStart: (_, ctx) => {
+      ctx.startX = x.value;
+      ctx.startY = y.value;
+      ctx.dragged = false;
+      
+     // backgroundColor.value = 'lightgreen';
+    },
+    onActive: (event, ctx) => {
+      if(ctx.dragged == false){
+        ctx.dragged = true;
+     //   backgroundColor.value= 'lightgreen';
+      }
+      x.value = ctx.startX + event.translationX;
+      y.value = ctx.startY + event.translationY;
+    },
+    onFinish: (_, ctx)=>{
+     // backgroundColor.value= 'green';
+      if(ctx.dragged == true){
+        props.updatePos(props.object.idx, x.value, y.value);
+      }
+    },
+  })
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      left: 0,
+      top: 0,
+      width: 100,
+      height: 100,
+      position: 'absolute',
+      //backgroundColor: backgroundColor.value,
+      color: 'white',
+      transform: [
+        {translateX: x.value},
+        {translateY: y.value},
+      ]
+       }
+  })
+
+  const initComp = () => {
+    let myComp = null;
+    switch (props.object.id) {
+      case 'field':
+        myComp = <Field idx={props.object.idx} id={'field'}
+          x={props.object.x}
+          y={props.object.y}
+          zIndex= {props.object.idx}
+          showBag={props.showBag} setUsedScreen={props.setUsedScreen}
+          updatePos={props.updatePos} setObjIdx={props.setObjIdx}
+          key = {props.idx}
+          />
+        break;
+        case 'flower':
+          myComp = <Flower idx={props.object.idx} id={'flower'}
+            x={props.object.x}
+            y={props.object.y}
+            zIndex= {props.object.idx}
+            showBag={props.showBag} setUsedScreen={props.setUsedScreen}
+            updatePos={props.updatePos} setObjIdx={props.setObjIdx}
+            key = {props.idx}
+            />
+            break;
+
+
+    }
+    console.log("initComp myComp: ", myComp);
+    setComp(myComp);
+  };
+
+  useEffect(() => {
+    console.log("myObj: called once");
+    initComp();
+
+  }, []);
+
   return (
-    <View>{props.obj}</View>
+    <PanGestureHandler onGestureEvent={panHandler}>
+    <Animated.View style={animatedStyle}>
+      {comp}
+    </Animated.View>
+    </PanGestureHandler>
   );
 }
 
 const Island = (props) => {
-  const [island, setIsland] = useState([
-    {
-      obj: <Field style={{position: 'absolute', bottom: 0, right: 0, zIndex: 100}} showBag={props.showBag} setUsedScreen={()=>props.setUsedScreen("field")} key="field"/>,
-    },
-  ])
+  // const [island, setIsland] = useState([
+  //   {
+  //     idx: 0, 
+  //     x: Dimensions.get('screen').width * 2 / 5, 
+  //     y: Dimensions.get('screen').height * 2 / 5,
+  //     id: 'field',
+  //   },
+  // ]);
 
-  let islandRender =[];
-  for(let i =0; i< island.length; i++){
-    let object = island[i];
-    islandRender.push(
-        <MyObj
-          obj={object.obj}
-        />
-    );
+//   const getData = async () => {
+//     const result = await SecureStore.getItemAsync('Island');
+//     console.log("island getData: result", result);
+//     if (result != null) {
+//       const json = await JSON.parse(result);
+//       console.log("Island useEffect json", json, "\n result: ", result);
+//       setIsland(json);
+//     }
+//    // else setData();
+//   };
+
+//   const updatePos = async (idx, x, y) =>{
+//     await getData();//데이터 불러오기(저장된 값)
+//     let myIsland = JSON.parse(JSON.stringify(island));
+//     myIsland = myIsland.map((item) => item.idx === idx ? {...item, x: x, y: y}: item);
+//     console.log(myIsland);
+//     SecureStore.setItemAsync('Island', JSON.stringify(myIsland));
+//     setIsland(myIsland);
+//     //데이터 저장하기
+//   };
+  
+//   const setData = async () => {
+//     const result = await SecureStore.getItemAsync('Island', JSON.stringify(island));
+//     console.log("result", result);
+//   };
+
+//   const deleteData = async () => {
+//     await SecureStore.deleteItemAsync('Island');
+//   }
+
+// console.log("island: ", island);
+
+//   useEffect(() => {
+// //    deleteData('Island');
+//     console.log("called once");
+//  //   setData();
+//     getData();
+//   }, []);
+
+//   let islandRender = [];
+//   for(let i = 0; i < island.length; i++) {
+//     let item = island[i];
+//     //console.log("item: ", item);
+//     islandRender.push(<MyObj key={item.idx} object={item}
+//       showBag={props.showBag}
+//       setUsedScreen={props.setUsedScreen}
+//       updatePos={updatePos} setObjIdx={props.setObjIdx}/>);
+//     }
+
+//   return <View key='islandContainer'
+//     style={{ flex: 1, position: 'absolute' }}>
+//       {islandRender}
+//     </View>
+
+  const getData = async () => {
+    const result = await SecureStore.getItemAsync('Island');
+    console.log("island getData: result", result);
+    if (result != null) {
+      const json = await JSON.parse(result);
+      console.log("Island useEffect json", json, "\n result: ", result);
+      props.setIsland(json);
+    }
+   // else setData();
+  };
+
+  const updatePos = async (idx, x, y) =>{
+    await getData();//데이터 불러오기(저장된 값)
+    let myIsland = JSON.parse(JSON.stringify(props.island));
+    myIsland = myIsland.map((item) => item.idx === idx ? {...item, x: x, y: y}: item);
+    console.log(myIsland);
+    SecureStore.setItemAsync('Island', JSON.stringify(myIsland));
+    props.setIsland(myIsland);
+    //데이터 저장하기
+  };
+  
+  const setData = async () => {
+    const result = await SecureStore.getItemAsync('Island', JSON.stringify(props.island));
+    console.log("result", result);
+  };
+
+  const deleteData = async () => {
+    await SecureStore.deleteItemAsync('Island');
   }
-  return (
-    <View key = "islandContainer" >
-      {islandRender}
 
+console.log("island: ", props.island);
+
+  useEffect(() => {
+   // deleteData('Island');
+    console.log("called once");
+  // setData();
+    getData();
+  }, []);
+
+  let islandRender = [];
+  for(let i = 0; i < props.island.length; i++) {
+    let item = props.island[i];
+    //console.log("item: ", item);
+    islandRender.push(<MyObj key={item.idx} object={item}
+      showBag={props.showBag}
+      setUsedScreen={props.setUsedScreen}
+      updatePos={updatePos} setObjIdx={props.setObjIdx}/>);
+    }
+
+  return <View key='islandContainer'
+    style={{ flex: 1, position: 'absolute' }}>
+      {islandRender}
     </View>
-  )
 }
 
-export default function MainScene( { navigation, route }) {
+
+export default function MainScene({ navigation, route }) {
+ const [island, setIsland] = useState([
+    {
+      idx: 0, 
+      x: Dimensions.get('screen').width * 2 / 5, 
+      y: Dimensions.get('screen').height * 2 / 5,
+      id: 'field',
+    },
+  ]);
+
   const [profileVisible, setProfileVisible] = useState(false);
   const showProfile = () => setProfileVisible(true);
   const hideProfile = () => setProfileVisible(false);
@@ -147,6 +345,21 @@ export default function MainScene( { navigation, route }) {
     navigation.navigate("Shop");
   }
 
+  const useSeed = (idx) => {
+    let item = island.filter((item)=>item.idx === idx);
+    let newObj ={ 
+      idx: island.length,
+      x: item[0].x,
+      y: item[0].y,
+      id: 'flower',
+    };
+
+    let myIsland = island;
+    myIsland.push(newObj);
+
+    console.log("useSeed myIsland: ", myIsland);
+  }
+
   //const [money, setMoneyValue] = useState(0);
   const [flowerNum, setFlowerValue] = useState(0);
   const [flowerMax, setFlowerMaxValue] = useState(3);
@@ -157,13 +370,15 @@ export default function MainScene( { navigation, route }) {
 
   const [detailObject, setDetailObject] = useState(null);
   const [usedScreen, setUsedScreen] = useState(null);
+  const [objIdx, setObjIdx] = useState(-1);
 
   return (
     <PaperProvider theme={theme}>
-        
-      <View style={styles.mainSceneContainer}>
-      <Island style={{flex: 1,  position: 'absolute'}} showBag={showBag} hideDetail={hideDetail} hideBag={hideBag} setUsedScreen={setUsedScreen} key={"island"}/>
 
+      <View style={styles.mainSceneContainer}>
+        {<Island island={island} setIsland={setIsland}
+          showBag={showBag} setUsedScreen={setUsedScreen} setObjIdx={setObjIdx}
+           key={"island"} />}
         <Portal>
           <Modal visible={profileVisible} onDismiss={hideProfile}
             contentContainerStyle={profileModalStyle}>
@@ -175,7 +390,10 @@ export default function MainScene( { navigation, route }) {
           <Setting visible={settingVisible} onDismiss={hideSetting} />
           <Modal visible={bagVisible} onDismiss={hideBag}
             contentContainerStyle={bagModalStyle}>
-           <Bag usedScreen ={usedScreen} showDetail={showDetail} setDetailObject={setDetailObject} hideDetail={hideDetail} hideBag={hideBag}/>
+            <Bag usedScreen={usedScreen} showDetail={showDetail}
+              setDetailObject={setDetailObject}
+              hideDetail={hideDetail} hideBag={hideBag}
+                useSeed={useSeed} objIdx={objIdx}/>
           </Modal>
           <Modal visible={detailVisible} onDismiss={hideDetail} contentContainerStyle={detailModalStyle}>
             {detailObject}
@@ -211,7 +429,7 @@ export default function MainScene( { navigation, route }) {
             </Pressable>
 
             <View style={{ alignSelf: 'center', marginTop: "5%" }}>
-              <MaterialCommunityIcons name="bag-personal" size={40} color='#A57939' onPress={()=>{showBag();setUsedScreen("main");}} />
+              <MaterialCommunityIcons name="bag-personal" size={40} color='#A57939' onPress={() => { showBag(); setUsedScreen("main"); }} />
             </View>
           </View>
           <View style={{
@@ -274,15 +492,18 @@ export default function MainScene( { navigation, route }) {
             //alignSelf: 'center',
             alignItems: 'center',
           }}>
-           
-          <Field showBag={showBag} setUsedScreen={()=>setUsedScreen("field")} key="field"/>
+
+            {/*<Field showBag={showBag} setUsedScreen={()=>setUsedScreen("field")} key="field"/>*/}
           </View>
           <Pressable onPress={showBottomBar} style={{ alignSelf: 'center', width: '20%', height: '3%', backgroundColor: 'red' }} />
         </View>
 
+
+
+
       </View>
 
-      
+
     </PaperProvider>
   );
 }
@@ -290,7 +511,7 @@ export default function MainScene( { navigation, route }) {
 const styles = StyleSheet.create({
   mainSceneContainer: {
     marginTop: '6%',
-   flex: 1,
+    flex: 1,
     backgroundColor: '#fff',
   },
   list: {

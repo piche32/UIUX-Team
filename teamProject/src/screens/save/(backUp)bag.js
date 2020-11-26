@@ -29,32 +29,26 @@ const Item = (props) => {
                     }
 
     const pressed = () => {
-        switch (props.usedScreen) {
+        switch(props.usedScreen){
             case "main":
                 detail = <View>
-                    <Text style={{ fontWeight: 'bold' }}>{props.name}</Text>
+                    <Text style={{fontWeight: 'bold'}}>{props.name}</Text>
                     <Text>{props.detail}</Text>
                 </View>
                 break;
             case "field":
                 detail = <View>
-                    <Text style={{ fontWeight: 'bold' }}>{props.name}</Text>
+                    <Text style={{fontWeight: 'bold'}}>{props.name}</Text>
                     <Text>{props.detail}</Text>
                     {BTActive()}
 
                 </View>
                 break;
-            case "flower":
-                detail = <View>
-                    <Text style={{ fontWeight: 'bold' }}>{props.name}</Text>
-                    <Text>{props.detail}</Text>
-                </View>
-                break;
 
         }
         props.setDetailObject(detail);
-        // console.log(detail);
-        if (detail != null)
+       // console.log(detail);
+        if(detail != null)
             props.showDetail();
     }
 

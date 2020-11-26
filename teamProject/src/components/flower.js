@@ -1,29 +1,29 @@
 
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable, Text, TouchableOpacity, Image} from 'react-native';
+import { StyleSheet, View, Pressable, Text, Image, TouchableOpacity } from 'react-native';
 import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
 
 
-const Field = (props)=> {
+const Flower = (props)=> {
  
   const pressField = () => {
     props.showBag();
-    props.setUsedScreen('field');
+    props.setUsedScreen('flower');
     props.setObjIdx(props.idx);
   }
   return(
       <TouchableOpacity onPress = {pressField}
        style = {{...StyleSheet.absoluteFill,
-        justifyContent: 'center',}}>
-       <Image source={require('../../assets/garden/field.png')} style={styles.obj}/>
+       justifyContent: 'center'}}>
+        <Image source={require('../../assets/garden/flower.png')} style={styles.obj}/>
         </TouchableOpacity>
     
   );
 }
-export default Field;
+export default Flower;
 
   const styles = StyleSheet.create({
     field:
@@ -37,10 +37,11 @@ export default Field;
     },
     text:{
       textAlign: "center",
-    },obj:{
-      flex: 1,
-      width: '150%',
-      height: '10%',
-   }
+    },
+    obj:{
+       flex: 1,
+       width: '150%',
+       height: '100%',
+    }
   });
   

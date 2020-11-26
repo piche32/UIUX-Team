@@ -1,7 +1,7 @@
 
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable, Text, TouchableOpacity, Image} from 'react-native';
+import { StyleSheet, View, Pressable, Text } from 'react-native';
 import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
@@ -15,11 +15,9 @@ const Field = (props)=> {
     props.setObjIdx(props.idx);
   }
   return(
-      <TouchableOpacity onPress = {pressField}
-       style = {{...StyleSheet.absoluteFill,
-        justifyContent: 'center',}}>
-       <Image source={require('../../assets/garden/field.png')} style={styles.obj}/>
-        </TouchableOpacity>
+      <Pressable onPress = {pressField} style = {{...StyleSheet.absoluteFill, justifyContent: 'center'}}>
+        <Text style={styles.text}>{props.id}</Text>
+        </Pressable>
     
   );
 }
@@ -37,10 +35,6 @@ export default Field;
     },
     text:{
       textAlign: "center",
-    },obj:{
-      flex: 1,
-      width: '150%',
-      height: '10%',
-   }
+    }
   });
   
