@@ -18,6 +18,7 @@ const Item = (props) => {
         props.hideDetail();
         props.hideBag();
         if(props.useObject == null) return;
+        console.log("Bag useObject props: ", props);
           if(props.id == 'seed')  props.useObject(props.objIdx);
     }
 

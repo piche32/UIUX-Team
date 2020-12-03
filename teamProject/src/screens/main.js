@@ -1,18 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Button, ScrollView, Image, Pressable, Dimensions, AsyncStorage } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState, useRef, useEffect, } from 'react';
+import { StyleSheet, View, ScrollView, Image, Pressable, Dimensions, ImageBackground } from 'react-native';
+import { MaterialCommunityIcons, MaterialIcons, Entypo } from '@expo/vector-icons';
 import { DefaultTheme, Avatar, Modal, Portal, Provider as PaperProvider, Text } from 'react-native-paper';
-import { MaterialIcons, Entypo } from '@expo/vector-icons';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { PanGestureHandler, State, TouchableOpacity } from 'react-native-gesture-handler';
+import Animated, { set, useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import * as SecureStore from 'expo-secure-store';
 
 import Field from '../components/field';
+import FieldWithoutGesture from '../components/fieldWithoutGesture';
 import Flower from '../components/flower';
+import FlowerWithoutGesture from '../components/flowerWithoutGesture';
+
 import BookScene from './book';
 import Bag from '../components/bag';
 import Setting from '../components/setting';
-import * as SecureStore from 'expo-secure-store';
-
+import Cloud from '../components/cloud';
+import UI from '../components/UI';
+import Timer from '../components/timer';
+import { poly } from 'react-native/Libraries/Animated/src/Easing';
 
 function WorkerUI(props) {
   return (
@@ -98,72 +103,31 @@ const bottomBarModalStyle = {
 const MyObj = (props) => {
   const [comp, setComp] = useState(null);
 
-  const x = useSharedValue(props.object.x);
-  const y = useSharedValue(props.object.y);
-
-  const backgroundColor = useSharedValue('green');
-
-  const panHandler = useAnimatedGestureHandler({
-    onStart: (_, ctx) => {
-      ctx.startX = x.value;
-      ctx.startY = y.value;
-      ctx.dragged = false;
-      
-     // backgroundColor.value = 'lightgreen';
-    },
-    onActive: (event, ctx) => {
-      if(ctx.dragged == false){
-        ctx.dragged = true;
-     //   backgroundColor.value= 'lightgreen';
-      }
-      x.value = ctx.startX + event.translationX;
-      y.value = ctx.startY + event.translationY;
-    },
-    onFinish: (_, ctx)=>{
-     // backgroundColor.value= 'green';
-      if(ctx.dragged == true){
-        props.updatePos(props.object.idx, x.value, y.value);
-      }
-    },
-  })
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      left: 0,
-      top: 0,
-      width: 100,
-      height: 100,
-      position: 'absolute',
-      //backgroundColor: backgroundColor.value,
-      color: 'white',
-      transform: [
-        {translateX: x.value},
-        {translateY: y.value},
-      ]
-       }
-  })
-
   const initComp = () => {
     let myComp = null;
     switch (props.object.id) {
       case 'field':
-        myComp = <Field idx={props.object.idx} id={'field'}
+        myComp = <FieldWithoutGesture idx={props.object.idx} id={props.object.id}
           x={props.object.x}
           y={props.object.y}
-          zIndex= {props.object.idx}
+          scale={props.object.scale}
           showBag={props.showBag} setUsedScreen={props.setUsedScreen}
+     
           updatePos={props.updatePos} setObjIdx={props.setObjIdx}
           key = {props.idx}
           />
-        break;
+         break;
+
         case 'flower':
-          myComp = <Flower idx={props.object.idx} id={'flower'}
+          myComp = <FlowerWithoutGesture idx={props.object.idx} id={'flower'}
             x={props.object.x}
             y={props.object.y}
-            zIndex= {props.object.idx}
+          scale={props.object.scale}
             showBag={props.showBag} setUsedScreen={props.setUsedScreen}
             updatePos={props.updatePos} setObjIdx={props.setObjIdx}
-            key = {props.idx}
+           
+            key = {props.idx} pickUp = {props.pickUp}
+            growingTime = {5} value = {props.object.value}
             />
             break;
 
@@ -176,15 +140,21 @@ const MyObj = (props) => {
   useEffect(() => {
     console.log("myObj: called once");
     initComp();
-
   }, []);
 
+  // useEffect(() => {
+  //   console.log("Island: ", props.island);
+  // }, [props.island]);
+
   return (
-    <PanGestureHandler onGestureEvent={panHandler}>
-    <Animated.View style={animatedStyle}>
+  <View style={{
+    position: 'absolute', //backgroundColor: 'red',
+  // x: props.object.x, y: props.object.y, 
+  zIndex: props.object.y,
+  transform:[{translateX: props.object.x}, {translateY: props.object.y}, {scale: props.object.scale}]
+  }}>
       {comp}
-    </Animated.View>
-    </PanGestureHandler>
+  </View>
   );
 }
 
@@ -263,15 +233,17 @@ const Island = (props) => {
    // else setData();
   };
 
-  const updatePos = async (idx, x, y) =>{
-    await getData();//데이터 불러오기(저장된 값)
-    let myIsland = JSON.parse(JSON.stringify(props.island));
-    myIsland = myIsland.map((item) => item.idx === idx ? {...item, x: x, y: y}: item);
-    console.log(myIsland);
-    SecureStore.setItemAsync('Island', JSON.stringify(myIsland));
-    props.setIsland(myIsland);
-    //데이터 저장하기
-  };
+  // const updatePos = async (idx, x, y) =>{
+  //   await getData();//데이터 불러오기(저장된 값)
+  //   let myIsland = JSON.parse(JSON.stringify(props.island));
+  //   myIsland = myIsland.map((item) => item.idx === idx ? {...item, x: x, y: y}: item);
+  //   console.log(myIsland);
+  //   SecureStore.setItemAsync('Island', JSON.stringify(myIsland));
+  //   props.setIsland(myIsland);
+  //   const result = await SecureStore.getItemAsync('Island', JSON.stringify(props.island));
+
+  //   //setData();//데이터 저장하기
+  // };
   
   const setData = async () => {
     const result = await SecureStore.getItemAsync('Island', JSON.stringify(props.island));
@@ -282,13 +254,13 @@ const Island = (props) => {
     await SecureStore.deleteItemAsync('Island');
   }
 
-console.log("island: ", props.island);
+//console.log("island: ", props.island);
 
   useEffect(() => {
-   // deleteData('Island');
-    console.log("called once");
+  //  deleteData('Island');
+  //  console.log("called once");
   // setData();
-    getData();
+  //  getData();
   }, []);
 
   let islandRender = [];
@@ -296,13 +268,14 @@ console.log("island: ", props.island);
     let item = props.island[i];
     //console.log("item: ", item);
     islandRender.push(<MyObj key={item.idx} object={item}
-      showBag={props.showBag}
+      showBag={props.showBag} pickUp={props.pickUp}
       setUsedScreen={props.setUsedScreen}
-      updatePos={updatePos} setObjIdx={props.setObjIdx}/>);
+      updatePos={props.updatePos} setObjIdx={props.setObjIdx}/>
+      );
     }
 
   return <View key='islandContainer'
-    style={{ flex: 1, position: 'absolute' }}>
+    style={{ position: 'absolute', }}>
       {islandRender}
     </View>
 }
@@ -312,9 +285,48 @@ export default function MainScene({ navigation, route }) {
  const [island, setIsland] = useState([
     {
       idx: 0, 
-      x: Dimensions.get('screen').width * 2 / 5, 
-      y: Dimensions.get('screen').height * 2 / 5,
+      x: 32, 
+      y: 110,
       id: 'field',
+      scale: 0.3,
+      active: true,
+      isEmpty: true,
+    },
+     {
+      idx: 1, 
+      x: -76, 
+      y: 185,
+      id: 'field',
+      scale: 0.3,
+      active: true,
+      isEmpty: true,
+    },
+     {
+      idx: 2, 
+      x: 140, 
+      y: 185,
+      id: 'field',
+      scale: 0.3,
+      active: true,
+      isEmpty: true,
+    },
+    {
+      idx: 3, 
+      x: 32, 
+      y: 260,
+      id: 'field',
+      scale: 0.3,
+      active: true,
+      isEmpty: true,
+    },
+    {
+      idx: 4, 
+      x: 32, 
+      y: 185,
+      id: 'field',
+      scale: 0.3,
+      active: true,
+      isEmpty: true,
     },
   ]);
 
@@ -338,33 +350,12 @@ export default function MainScene({ navigation, route }) {
   const showBottomBar = () => setBottomBarVisible(true);
   const hideBottomBar = () => setBottomBarVisible(false);
 
-  const drawerBook = () => {
-    navigation.navigate("Book");
-  }
-  const goToShop = () => {
-    navigation.navigate("Shop");
-  }
-
-  const useSeed = (idx) => {
-    let item = island.filter((item)=>item.idx === idx);
-    let newObj ={ 
-      idx: island.length,
-      x: item[0].x,
-      y: item[0].y,
-      id: 'flower',
-    };
-
-    let myIsland = island;
-    myIsland.push(newObj);
-
-    console.log("useSeed myIsland: ", myIsland);
-  }
-
-  //const [money, setMoneyValue] = useState(0);
-  const [flowerNum, setFlowerValue] = useState(0);
-  const [flowerMax, setFlowerMaxValue] = useState(3);
-  const [guardianNum, setGuardianValue] = useState(0);
-  const [guardianMax, setGuardianMaxValue] = useState(3);
+  
+  const [money, setMoneyValue] = useState(0);
+  const [flowerNum, setFlowerValue] = useState(1);
+  const [flowerMax, setFlowerMaxValue] = useState(50);
+  const [fieldNum, setFieldValue] = useState(0);
+  const [fieldMax, setFieldMaxValue] = useState(5);
   const [flowerSpace, setFlowerSpace] = useState(0);
   const [guardianSpace, setGuardianSpace] = useState(0);
 
@@ -372,13 +363,118 @@ export default function MainScene({ navigation, route }) {
   const [usedScreen, setUsedScreen] = useState(null);
   const [objIdx, setObjIdx] = useState(-1);
 
+  const [mainTimer, setTimer] = useState(0);
+  const updateMainTimer = () => {
+    setTimer(mainTimer + 1);
+  }
+
+  const drawerBook = () => {
+    navigation.navigate("Book");
+  }
+  const goToShop = () => {
+    navigation.navigate("Shop");
+  }
+  const updatePos = (idx, x, y) =>{
+    //await getData();//데이터 불러오기(저장된 값)
+    let myIsland = island;
+    myIsland = myIsland.map((item) => item.idx === idx ? {...item, x: x, y: y}: item);
+    console.log(myIsland);
+    //SecureStore.setItemAsync('Island', JSON.stringify(myIsland));
+    setIsland(myIsland);
+   // const result =  SecureStore.getItemAsync('Island', JSON.stringify(props.island));
+
+    //setData();//데이터 저장하기
+  };
+
+  const useSeed = (idx) => {
+    let myIsland = island;
+    console.log('useSeed last item: ', myIsland[myIsland.length - 1]);
+    let myItem = island.filter((item) => item.idx === idx);
+    let newObj = {
+      idx: myIsland[myIsland.length - 1].idx + 1,
+      x: myItem[0].x - 2,
+      y: myItem[0].y - 23,
+      scale: 0.3,
+      value: 500,
+      id: 'flower',
+    };
+
+    console.log("useSeed newObj: ", newObj);
+    myIsland.push(newObj);
+    setFieldValue(fieldNum + 1);
+    for (let i = 0; i < myIsland.length; i++) {
+      if (myIsland[i].idx == idx) {
+        let obj = myIsland.splice(i, 1);
+        console.log("useSeed delete Obj: ", obj);
+        break;
+      }
+    }
+    setIsland(myIsland);
+    console.log("useSeed myIsland: ", myIsland);
+  }
+
+  const pickUp = (idx) => {
+    console.log('pick Up! ', idx);
+    console.log('money: ', money);
+
+    let myIsland = island;
+    console.log('pickUp last item: ', myIsland[myIsland.length-1]);
+    let myItem = island.filter((item) => item.idx === idx);
+    let newObj = {
+      idx: myIsland[myIsland.length - 1].idx + 1,
+      x: myItem[0].x + 2,
+      y: myItem[0].y + 23,
+      scale: 0.3,
+      id: 'field',
+    };
+
+    console.log("pickUp newObj: ", newObj);
+    myIsland.push(newObj);
+    let myNum = fieldNum - 1;
+    setFieldValue(myNum);
+
+    for (let i = 0; i < myIsland.length; i++) {
+      if (myIsland[i].idx == idx) {
+        let obj = myIsland.splice(i, 1);
+        setMoneyValue(money + obj[0].value);
+        console.log("pickUp delete Obj: ", obj);
+        console.log('money: ', money);
+        break;
+      }
+    }
+    setIsland(myIsland);
+    console.log("pickUp myIsland: ", myIsland);
+  }
+  
+
+
   return (
     <PaperProvider theme={theme}>
-
-      <View style={styles.mainSceneContainer}>
-        {<Island island={island} setIsland={setIsland}
-          showBag={showBag} setUsedScreen={setUsedScreen} setObjIdx={setObjIdx}
-           key={"island"} />}
+      <View style={{ ...styles.mainSceneContainer }}>
+        {/* <Image source={require("../../assets/garden/flower.png")} style={{
+          position: 'absolute',
+          width: 91,
+          height: 63,
+          left: 0,
+          top: 0,
+        }}/> */}
+        
+          <Timer timer={mainTimer} updateTimer={updateMainTimer}/>
+        <Cloud x={-100} y={51} width={2} height={2} offsetX={800} timer={mainTimer} duration={7}/>
+        <Cloud x= {-100} y = {Dimensions.get('screen').height*3/5} width={1.5} height={1.5}
+         offsetX={900} timer={mainTimer}  duration={9}  />
+        <Cloud x= {-150} y = {Dimensions.get('screen').height*1/5} width={1} height={1}
+         offsetX={1000} timer={mainTimer}  duration={6}/>
+        
+        <Image source={require("../../assets/garden/island.png")}
+          style={{
+            position: 'absolute',
+            left: Dimensions.get('window').width * 6 / 100,
+            top: Dimensions.get('window').height * 1 / 3.5,
+            transform: [{ scale: 1.1 }],
+            zIndex: -1,
+          }} />
+        
         <Portal>
           <Modal visible={profileVisible} onDismiss={hideProfile}
             contentContainerStyle={profileModalStyle}>
@@ -393,114 +489,103 @@ export default function MainScene({ navigation, route }) {
             <Bag usedScreen={usedScreen} showDetail={showDetail}
               setDetailObject={setDetailObject}
               hideDetail={hideDetail} hideBag={hideBag}
-                useSeed={useSeed} objIdx={objIdx}/>
+              useSeed={useSeed} objIdx={objIdx} />
           </Modal>
           <Modal visible={detailVisible} onDismiss={hideDetail} contentContainerStyle={detailModalStyle}>
             {detailObject}
           </Modal>
-          <Modal visible={bottomBarVisible} onDismiss={hideBottomBar}
+          {/* <Modal visible={bottomBarVisible} onDismiss={hideBottomBar}
             contentContainerStyle={bottomBarModalStyle}>
             <ScrollView style={styles.list}>
               <WorkerUI />
             </ScrollView>
-          </Modal>
+          </Modal> */}
 
         </Portal>
+        
         <View style={{
           flexWrap: "wrap",
           flex: 1.5,
-          //borderWidth: 1,
+         // borderWidth: 1,
           //borderColor: 'red',
           flexDirection: 'row',
-          paddingTop: '1%'
+          paddingTop: '1%',
+          justifyContent: 'space-between',
+          alignContent: 'center',
+          alignItems: 'center'
         }}>
+            <TouchableOpacity style={{
+             // borderWidth: 1,
+              justifyContent: 'center',
+            }}
+              onPress={()=>{showBag(); setUsedScreen("main");}}>
+            <ImageBackground source={require('../../assets/icon_base.png')} style={{
+              width: Dimensions.get('screen').width/10,
+              height: Dimensions.get('screen').width/11,
+               transform: [{scale: 0.95}],
+               justifyContent: 'center',
+               alignItems: 'center',
+               paddingBottom: '17%',
+               }}>
+            <MaterialCommunityIcons name="bag-personal" size={28} color='#A14326' />
+            </ImageBackground>
+            </TouchableOpacity>
           <View style={{
-            //borderColor: 'purple',
-            //borderWidth: 1,
-            flex: 1,
-            height: '100%',
-            justifyContent: 'flex-start',
+        //backgroundColor:'blue',
+           // flex: 0.8,
             alignContent: 'center',
             alignItems: 'center',
-            flexWrap: 'wrap',
+            justifyContent: 'space-around',
           }}>
-            <Pressable onPress={showProfile} >
-              <Avatar.Text size={50} label='LV1' style={{ justifyContent: "center" }} />
-            </Pressable>
-
-            <View style={{ alignSelf: 'center', marginTop: "5%" }}>
-              <MaterialCommunityIcons name="bag-personal" size={40} color='#A57939' onPress={() => { showBag(); setUsedScreen("main"); }} />
-            </View>
-          </View>
-          <View style={{
-            flex: 4,
-            flexWrap: 'wrap',
-            flexDirection: 'row',
-            //borderColor: 'gray',
-            //borderWidth: 1,
-            justifyContent: 'space-evenly',
-          }}>
-            <View style={{ flex: 0.4, flexDirection: 'row' }}>
-              <MaterialCommunityIcons name="coin" size={24} color="black" />
-              <View style={{ backgroundColor: 'gray', width: '70%', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: 'black' }}>{route.params?.money}</Text>
-              </View>
-            </View>
-            <View style={{ flex: 0.4, flexDirection: 'row' }}>
-              <MaterialCommunityIcons name="flower" size={24} color="black" />
-              <View style={{ backgroundColor: 'gray', width: '70%', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: 'black' }}>{flowerNum}/{flowerMax}</Text>
-              </View>
-            </View>
-            <View style={{ flex: 0.4, flexDirection: 'row' }}>
-              <MaterialCommunityIcons name="ladybug" size={24} color="black" />
-              <View style={{ backgroundColor: 'gray', width: '70%', justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: 'black' }}>{guardianNum}/{guardianMax}</Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={{
-            flex: 0.8,
-            alignContent: 'center',
-            alignItems: 'center'
-          }}>
-            <MaterialIcons name="settings" size={35} color="gray"
-              onPress={showSetting}
-            />
-            <Entypo name='shop' size={35} color="gray"
-              onPress={goToShop}
-              style={{
-                // marginTop: "10%"
-              }}
-            />
-            <MaterialCommunityIcons name="book-multiple" size={37} color="#593A14"
+            <TouchableOpacity 
+              onPress={showSetting}>
+            <Image source={require('../../assets/icon_setting.png')} style={{transform: [{scale: 0.8}]}}/>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={goToShop}>
+            <Image source={require('../../assets/icon_shop.png')} style={{transform: [{scale: 0.8}]}}/>
+            </TouchableOpacity>
+            <TouchableOpacity style={{
+             // borderWidth: 1,
+              justifyContent: 'center',
+            }}
+              onPress={()=>{drawerBook}}>
+            <ImageBackground source={require('../../assets/icon_base.png')} style={{
+              width: Dimensions.get('screen').width/10,
+              height: Dimensions.get('screen').width/11,
+               transform: [{scale: 0.94}],
+               justifyContent: 'center',
+               alignItems: 'center',
+               paddingBottom: '14%',
+               marginTop: '5%',
+               }}>
+               <MaterialCommunityIcons name="book-multiple" size={28} color="#A14326"
               onPress={drawerBook}
               style={{
                 // marginTop: '10%'
-              }}
-            />
+              }} />
+            </ImageBackground>
+            </TouchableOpacity>
           </View>
+        
         </View>
+        
         <View style={{ flex: 7, justifyContent: "flex-end" }}>
           <View style={{
-            ...StyleSheet.absoluteFill,
-            flex: 1,
             position: 'absolute',
-            justifyContent: 'center',
-            alignContent: 'center',
+            justifyContent: 'flex-end',
+           // alignContent: 'center',
             //alignSelf: 'center',
-            alignItems: 'center',
+           // alignItems: 'center',
           }}>
-
+        <UI money={money} fieldNum={fieldNum} fieldMax={fieldMax} flowerNum={flowerNum} flowerMax={flowerMax} showProfile={showProfile}/>
             {/*<Field showBag={showBag} setUsedScreen={()=>setUsedScreen("field")} key="field"/>*/}
           </View>
-          <Pressable onPress={showBottomBar} style={{ alignSelf: 'center', width: '20%', height: '3%', backgroundColor: 'red' }} />
+          {/* <Pressable onPress={showBottomBar} style={{ alignSelf: 'center', width: '20%', height: '3%', backgroundColor: 'red' }} /> */}
         </View>
-
-
-
-
+        <Island island={island} setIsland={setIsland} pickUp={pickUp}
+          showBag={showBag} setUsedScreen={setUsedScreen} setObjIdx={setObjIdx} updatePos={updatePos}
+          key={"island"} />
       </View>
 
 
@@ -512,7 +597,8 @@ const styles = StyleSheet.create({
   mainSceneContainer: {
     marginTop: '6%',
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#A8FFFA',
+    
   },
   list: {
     flex: 1,
