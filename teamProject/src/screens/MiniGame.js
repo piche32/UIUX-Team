@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useRef, version, useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView, Image, TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useRef, forwardRef, useImperativeHandle, version, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable, ScrollView, Image, TouchableWithoutFeedback, TouchableOpacity, ImageBackground } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -33,7 +33,7 @@ function InGameScene() {
 
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Main" component={MainScene} />
+      <Stack.Screen name="Main" component={MainScene} options={{ headerShown: false }}/>
       <Stack.Screen name="Score" component={ScoreScene} />
       <Stack.Screen name="Tutorial" component={TutorialScene} />
     </Stack.Navigator>
@@ -50,11 +50,21 @@ const theme = {
 }
 
 const defaultModalStyle = {
-  backgroundColor: 'white',
+  backgroundColor: '#ffffff',
   padding: 5,
   height: "70%",
   width: "70%",
   marginLeft: "15%",
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const ImageModalStyle = {
+  backgroundColor: '#ffffff00',
+  padding: 5,
+  height: "50%",
+  width: "80%",
+  marginLeft: "10%",
   alignItems: 'center',
   justifyContent: 'center',
 };
@@ -84,12 +94,14 @@ function MainScene({ navigation }) {
 
   return (
     <PaperProvider theme={theme}>
-      <View style={styles.mainSceneTitleContainer}>
-        <MaterialCommunityIcons name="bug" size={80} color='black' />
-        <Text style={styles.titleText}> MiniGame </Text>
+      <View style={{...styles.mainSceneTitleContainer, backgroundColor: '#FFDD87'}}>
+        <Avatar.Image size={50} source={require('./../../assets/MiniGame/Enemy_orange.png')} resizeMode="stretch" />
+        <ImageBackground source={require('../../assets/MiniGame/ExplanBar.png')} style={{ width: 143, height: 37, justifyContent: 'center' }}>
+          <Text style={styles.titleText}> MiniGame </Text>
+        </ImageBackground>
       </View>
 
-      <View style={styles.mainSceneContainer}>
+      <View style={{...styles.mainSceneContainer, backgroundColor: '#FFDD87'}}>
         <Portal>
           <Modal visible={settingVisible} onDismiss={hideSetting}
             contentContainerStyle={defaultModalStyle}>
@@ -104,22 +116,47 @@ function MainScene({ navigation }) {
             </View>
           </Modal>
           <Modal visible={GameStartVisible} onDismiss={hideGameStart}
-            contentContainerStyle={defaultModalStyle}>
-            <MaterialCommunityIcons name="bug" size={80} color='black' />
-            <Text style={styles.titleText}> GameStart </Text>
-            <Text></Text><Text></Text>
-            <MaterialCommunityIcons onPress={goToGamePlay} name="emoticon" size={80} color='green' />
-            <Text> Easy </Text>
-            <Text></Text>
-            <MaterialCommunityIcons onPress={goToGamePlay} name="emoticon-angry" size={80} color='red' />
-            <Text> Hard </Text>
+            contentContainerStyle={ImageModalStyle}>
+            <ImageBackground source={require('../../assets/MiniGame/MenuPanel.png')} style={{ position: 'absolute', width: 400, height: 412 }} />
+            <ImageBackground source={require('../../assets/MiniGame/ExplanBar.png')} style={{ flex: 0.2, width: 143, height: 37}}>
+              <Text style={styles.titleText}> Difficulty </Text>
+            </ImageBackground>
+            <View style={{ flex: 0.6, flexDirection: 'row' }}>
+              <TouchableOpacity onPress={goToGamePlay} style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: '3%' }}>
+                <Image source={require('../../assets/MiniGame/Player.png')} style={{ width: 70, height: 70, marginBottom: '5%' }} resizeMode='stretch' />
+                <ImageBackground source={require('../../assets/MiniGame/MenuButton.png')} style={{ width: 100, height: 46, justifyContent: 'center' }}>
+                  <Text style={{ ...styles.titleText, fontSize: 18 }}> Easy </Text>
+                </ImageBackground>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={goToGamePlay} style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: '3%' }}>
+                <Image source={require('../../assets/MiniGame/Enemy_orange_fire.png')} style={{ width: 70, height: 70, marginBottom: '5%' }} resizeMode='stretch' />
+                <ImageBackground source={require('../../assets/MiniGame/MenuButton.png')} style={{ width: 100, height: 46, justifyContent: 'center' }}>
+                  <Text style={{ ...styles.titleText, fontSize: 18 }}> Hard </Text>
+                </ImageBackground>
+              </TouchableOpacity>
+            </View>
           </Modal>
         </Portal>
-
-        <Button onPress={goToScore} mode="contained">최고 기록</Button>
-        <Button onPress={showSetting} mode="contained">환경 설정</Button>
-        <Button onPress={goToTutorial} mode="contained">게임 방법</Button>
-        <Button onPress={showGameStart} mode="contained" style={{ marginTop: '5%' }}>Game Start</Button>
+        <TouchableOpacity onPress = {goToScore} style = {{justifyContent: 'center',}}>
+          <ImageBackground source={require('../../assets/MiniGame/MenuButton.png')} style={{ width: 100, height: 46, justifyContent: 'center'}}>
+          <Text style={{...styles.titleText, fontSize: 18}}> 최고 기록 </Text>
+          </ImageBackground>
+        </TouchableOpacity>
+        <TouchableOpacity onPress = {showSetting} style = {{justifyContent: 'center',}}>
+          <ImageBackground source={require('../../assets/MiniGame/MenuButton.png')} style={{ width: 100, height: 46, justifyContent: 'center'}}>
+          <Text style={{...styles.titleText, fontSize: 18}}> 환경 설정 </Text>
+          </ImageBackground>
+        </TouchableOpacity>
+        <TouchableOpacity onPress = {goToTutorial} style = {{justifyContent: 'center',}}>
+          <ImageBackground source={require('../../assets/MiniGame/MenuButton.png')} style={{ width: 100, height: 46, justifyContent: 'center'}}>
+          <Text style={{...styles.titleText, fontSize: 18}}> 게임 방법 </Text>
+          </ImageBackground>
+        </TouchableOpacity>
+        <TouchableOpacity onPress = {showGameStart} style = {{justifyContent: 'center', marginTop: '5%'}}>
+          <ImageBackground source={require('../../assets/MiniGame/StartButton.png')} style={{ width: 120, height: 43.2, justifyContent: 'center'}}>
+          <Text style={{...styles.titleText, fontSize: 18}}> Game Start </Text>
+          </ImageBackground>
+        </TouchableOpacity>
       </View>
     </PaperProvider>
   );
@@ -150,6 +187,7 @@ function ScoreEasy() {
     </View>
   );
 }
+
 function ScoreHard() {
   return (
     <View style={styles.ScoreTab}>
@@ -249,7 +287,7 @@ function TutorialScene() {
 }
 
 const GamePlayModal = {
-  backgroundColor: 'white',
+  backgroundColor: '#fff',
   padding: 5,
   height: "70%",
   width: "70%",
@@ -298,40 +336,33 @@ class ShowStatus_UnderBar extends React.Component {
   render() {
     return (
       <>
-        <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '70%', height: '100%', backgroundColor: 'gray' }}>
-          <DataTable>
-            <DataTable.Row>
-              <DataTable.Cell><Entypo name="stopwatch" size={25} color="black" />
-                <Text style={styles.titleText}> {parseInt(playTime / 60)}:{parseInt(playTime % 60)}</Text>
-              </DataTable.Cell>
-            </DataTable.Row>
-            <DataTable.Row>
-              <DataTable.Cell><MaterialCommunityIcons name="coin" size={25} color="black" /> <Text style={styles.titleText}>{money}</Text></DataTable.Cell>
-            </DataTable.Row>
-          </DataTable>
-          <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
+        <ImageBackground source={require('../../assets/MiniGame/UI_under.png')} style={{ position: 'absolute', width: '100%', height: '100%' }} resizeMode='stretch' />
+        <View style={{width: '70%', height: '100%', paddingLeft: '7%', justifyContent: 'space-evenly' }}>
+          <View style={{ flexDirection: 'row', marginTop: '4%'}}>
+          <Image source={require('../../assets/MiniGame/Clock.png')} style={{ width: 30, height: 30 }} resizeMode='stretch' />
+            <Text style={styles.titleText}> {parseInt(playTime / 60)}:{parseInt(playTime % 60)}</Text>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+          <Image source={require('../../assets/MiniGame/Money.png')} style={{ width: 27, height: 27 }} resizeMode='stretch' />
+            <Text style={styles.titleText}> {money}</Text>
+          </View>
         </View>
-        <View style={{ flexDirection: 'row', alignSelf: 'flex-end', width: '30%', height: '100%', backgroundColor: 'gray' }}>
-          <DataTable>
-            <DataTable.Row>
-              <DataTable.Cell>
-              <Image source={require('./../../assets/MiniGame/Enemy.png')} style={{ width: 25, height: 25}} resizeMode="stretch" />
+        <View style={{width: '30%', height: '100%', paddingLeft: '3%', justifyContent: 'space-evenly'}}>
+          <View style={{ flexDirection: 'row', marginTop: '4%' }}>
+          <Image source={require('./../../assets/MiniGame/Enemy_orange.png')} style={{ width: 25, height: 25}} resizeMode="stretch" />
                 <Text style={styles.titleText}> {EnemyUnit}</Text>
-              </DataTable.Cell>
-            </DataTable.Row>
-            <DataTable.Row>
-              <DataTable.Cell>
-              <Image source={require('./../../assets/MiniGame/Player.png')} style={{ width: 25, height: 25}} resizeMode="stretch" />
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+          <Image source={require('./../../assets/MiniGame/Player.png')} style={{ width: 25, height: 25}} resizeMode="stretch" />
                 <Text style={styles.titleText}> {playerUnit}</Text>
-              </DataTable.Cell>
-            </DataTable.Row>
-          </DataTable>
-          <View style={{ ...StyleSheet.absoluteFill, borderWidth: 2, borderColor: 'Black' }} />
+          </View>
         </View>
+        
       </>
     )
   }
 }
+
 class UpdateStatus_UnderBar extends React.Component {
   constructor() {
     super()
@@ -367,16 +398,22 @@ function GamePlayScene() {
     <GamePlayStack.Navigator>
       <GamePlayStack.Screen name="GMain" component={GamePlayMainScene} options={{ headerShown: false }} />
       <GamePlayStack.Screen name="Shop" component={ShopScene} />
-      <GamePlayStack.Screen name="Enhance" component={EnhanceScene} />
     </GamePlayStack.Navigator>
   );
 }
+
+const personalNames = ["James", "Ana", "Steve", "David", "Sophia", "Sally", "Holy",
+"Anika", "Aster", "Ava", "Baron", "Bono", "Buddy", "Charlie",
+"Cecil", "Carmen", "Dennis", "Doris", "Duke", "Elysia", "Elsa",
+"Eve", "Favian", "Florence", "George", "Helen", "Hubert", "Isis",
+];
 
 const Box = (props) => {
   const x = useSharedValue(props.x);
   const y = useSharedValue(props.y);
   const color = useSharedValue("cyan");
-  const scale = useSharedValue(props.scale);
+  const fixedScale = props.scale;
+  const scale = useSharedValue(fixedScale);
   const [active, setActive] = useState(false);
   const [team, setTeam] = useState(props.team);
   const [imageSource, setImageSource] = useState(require('./../../assets/MiniGame/Player.png'));
@@ -389,7 +426,7 @@ const Box = (props) => {
     if (team == "Player")
       setImageSource(require('./../../assets/MiniGame/Player.png'));
     else if (team == "Enemy")
-      setImageSource(require('./../../assets/MiniGame/Enemy.png'));
+      setImageSource(require('./../../assets/MiniGame/Enemy_orange.png'));
   }
 
 
@@ -405,7 +442,7 @@ const Box = (props) => {
   const jump = () => {
     //x.value = withTiming(x.value + 10, {duration: 200, ease: Easing.linear});
     //y.value = repeat(withTiming(y.value-80, { duration: 100}), 2, true);
-    scale.value = sequence(withTiming(scale.value + 0.3, { duration: 100 }), withTiming(scale.value, { duration: 100 }));  //위의 repeat과 같은 동작
+    scale.value = sequence(withTiming(fixedScale + 0.3, { duration: 200 }), withTiming(fixedScale, { duration: 200 }));  //위의 repeat과 같은 동작
   }
 
   const setColor = (c) => color.value = c;
@@ -480,41 +517,39 @@ const Box = (props) => {
     );
 }
 
-const personalNames = ["James", "Ana", "Steve", "David", "Sophia", "Sally", "Holy",
-"Anika", "Aster", "Ava", "Baron", "Bono", "Buddy", "Charlie",
-"Cecil", "Carmen", "Dennis", "Doris", "Duke", "Elysia", "Elsa",
-"Eve", "Favian", "Florence", "George", "Helen", "Hubert", "Isis",
-];
+let player = null;
+let enemy = null;
 
 let interactionInfo = [];
 
 const Boxes = (props) => {
+
   const [boxes, setBoxes] = useState([{
-    name: "box 1", nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
+    name: 0, nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
     left: 0, top: 0, x: 0, y: 0, scale: 0.8, active: false, team: props.team
   },
   {
-    name: "box 2", nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
+    name: 1, nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
     left: 0, top: 0, x: -80, y: 0, scale: 0.5, active: false, team: props.team
   },
   {
-    name: "box 3", nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
+    name: 2, nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
     left: 0, top: 0, x: -40, y: -50, scale: 0.5, active: false, team: props.team
   },
   {
-    name: "box 4", nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
+    name: 3, nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
     left: 0, top: 0, x: 40, y: -50, scale: 0.5, active: false, team: props.team
   },
   {
-    name: "box 5", nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
+    name: 4, nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
     left: 0, top: 0, x: 80, y: 0, scale: 0.5, active: false, team: props.team
   },
   {
-    name: "box 6", nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
+    name: 5, nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
     left: 0, top: 0, x: 40, y: 50, scale: 0.5, active: false, team: props.team
   },
   {
-    name: "box 7", nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
+    name: 6, nickname: personalNames[Math.floor(Math.random()* 100) % personalNames.length],
     left: 0, top: 0, x: -40, y: 50, scale: 0.5, active: false, team: props.team
   },
   ]); // react hook
@@ -527,6 +562,7 @@ const Boxes = (props) => {
         let Enemy = JSON.parse(JSON.stringify(boxes));
         Enemy.map((item)=> item.y = item.y - 252);
         AsyncStorage.setItem('Enemy', JSON.stringify(Enemy));
+        enemy = [...boxes];
       }
       else if (props.team == 'Player') {
         const result = await AsyncStorage.getItem('Enemy');
@@ -534,10 +570,17 @@ const Boxes = (props) => {
           const json = await JSON.parse(result);
           setEnemyBoxes(json);
         }
+        player = [...boxes];
       }
     }
     rememberEnemyDefault();
   }, []);
+
+  useEffect(() => {
+    //if(player != null)
+    //props.unitInfoUpdate(boxes, EnemyBoxes);
+    //console.log(props.team, boxes);
+  }, [boxes]);
 
   const cleanupAction = () => {
     let myBoxes = [...boxes]; // spread operator ...
@@ -568,7 +611,7 @@ const Boxes = (props) => {
     for (let i = 0; i < boxes.length; i++) {
       let box = boxes[i];
       if (box.nickname != nickname) { continue; }
-      let nearEnemy = [-1, 1000];
+      let nearEnemy = [-1, 1000]; // nearEnemy[0]은 Box의 번호, nearEnemy[1]은 거리를 의미
       for (let j = 0; j < EnemyBoxes.length; j++) {
         let lenght = Math.abs(Math.abs(x - EnemyBoxes[j].x) + Math.abs(y - EnemyBoxes[j].y));
         if (intersect(x, y, 100 * box.scale, EnemyBoxes[j].x, EnemyBoxes[j].y, 100 * EnemyBoxes[j].scale) &&
@@ -583,10 +626,14 @@ const Boxes = (props) => {
         interactionInfo.push(boxes[i]);
         interactionInfo.push(EnemyBoxes[nearEnemy[0]]);
         interactionInfo.push(nearEnemy[0]);
-        console.log(interactionInfo);
+        //console.log(interactionInfo);
         props.showEnemyInteraction();
         props.loadInteractionInfomation();
-        props.unitInfoUpdate(boxes, EnemyBoxes);
+
+        //console.log("wow", ref);
+        //setBoxes(enemy);
+        props.unitInfoUpdate(player, enemy);
+        //props.unitInfoUpdate(boxes, EnemyBoxes);
       }
     }
   }
@@ -612,11 +659,8 @@ const Boxes = (props) => {
   );
 }
 
-let Player = null;
-let Enemy = null;
 
 function GamePlayMainScene({ navigation }) {
-
   const [settingVisible, setSettingVisible] = useState(false);
   const showSetting = () => setSettingVisible(true);
   const hideSetting = () => setSettingVisible(false);
@@ -637,17 +681,15 @@ function GamePlayMainScene({ navigation }) {
   const goToShop = () => {
     navigation.navigate("Shop");
   }
-  const goToEnhance = () => {
-    navigation.navigate("Enhance");
+
+  const Assassination = () => {
+    enemy.splice(interactionInfo[1].name,1);
+    setEnemyInteractionVisible(false);
   }
 
-
   const unitInfoUpdate = (boxes, EnemyBoxes) => {
-      Player = boxes;
-      playerUnit = boxes.lenght;
-
-      Enemy = EnemyBoxes;
-      EnemyUnit = EnemyBoxes.lenght;
+      playerUnit = boxes.length;
+      EnemyUnit = EnemyBoxes.length;
     }
 
   const [interactionInfomation, setInteractionInfomation] = useState(null);
@@ -661,7 +703,7 @@ function GamePlayMainScene({ navigation }) {
       <Entypo name="arrow-bold-right" size={40} color='black' />
       <View style={{ marginHorizontal: '5%', }}>
         <Text style={{ fontSize: 20, textAlign: 'center' }}>{interactionInfo[1].nickname}</Text>
-        <Image source={require('./../../assets/MiniGame/Enemy.png')} style={{ width: 50, height: 50, marginTop: '5%' }} resizeMode="stretch" />
+        <Image source={require('./../../assets/MiniGame/Enemy_orange.png')} style={{ width: 50, height: 50, marginTop: '5%' }} resizeMode="stretch" />
       </View>
     </View>;
 
@@ -671,7 +713,6 @@ function GamePlayMainScene({ navigation }) {
   return (
     <PaperProvider theme={theme}>
       <Portal>
-
         <Modal visible={settingVisible} onDismiss={hideSetting}
           contentContainerStyle={GamePlayModal} >
           <MaterialCommunityIcons style={{ flex: 1.15, marginRight: '80%' }} onPress={hideSetting}
@@ -705,7 +746,7 @@ function GamePlayMainScene({ navigation }) {
               backgroundColor: 'white',
               borderWidth: 3,
             }}>
-              <Pressable onPress={showSuccess} style={{ ...StyleSheet.absoluteFill, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Pressable onPress={Assassination} style={{ ...StyleSheet.absoluteFill, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={{ fontSize: 20 }}>암살</Text>
                 <View style={{ flexDirection: "row" }}>
                   <MaterialCommunityIcons name="coin" size={25} color="black" />
@@ -767,7 +808,8 @@ function GamePlayMainScene({ navigation }) {
         flexWrap: "wrap",
         flex: 1.5,
         flexDirection: 'row',
-        paddingTop: '1%'
+        paddingTop: '1%',
+        backgroundColor: 'darkseagreen',
       }}>
         <View style={{
           flex: 1,
@@ -777,12 +819,11 @@ function GamePlayMainScene({ navigation }) {
           alignItems: 'center',
           flexWrap: 'wrap',
         }}>
+          <TouchableOpacity onPress={goToShop} style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: '3%' }}>
+            <Image source={require('../../assets/MiniGame/icon_shop.png')} style={{ width: 50, height: 50 }} resizeMode='stretch' />
+          </TouchableOpacity>
           <View style={{ alignSelf: 'center', borderColor: 'green', borderWidth: 1, marginTop: "5%" }}>
-            <MaterialCommunityIcons onPress={goToShop} name="cart" size={50} color='black' />
-          </View>
-
-          <View style={{ alignSelf: 'center', borderColor: 'green', borderWidth: 1, marginTop: "5%" }}>
-            <MaterialCommunityIcons onPress={goToEnhance} name="account-multiple-plus" size={50} color='black' />
+            <MaterialCommunityIcons name="account-multiple-plus" size={50} color='black' />
           </View>
         </View>
         <View style={{
@@ -796,10 +837,12 @@ function GamePlayMainScene({ navigation }) {
         <View style={{
           flex: 0.8,
         }}>
-          <MaterialIcons onPress={showSetting} name="settings" size={50} color="black" />
+          <TouchableOpacity onPress={showSetting} style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: '3%' }}>
+            <Image source={require('../../assets/MiniGame/icon_setting.png')} style={{ width: 50, height: 50 }} resizeMode='stretch' />
+          </TouchableOpacity>
         </View>
       </View>
-      <View style={{ flex: 7, justifyContent: "space-between" }}>
+      <View style={{ flex: 7, justifyContent: "space-between", backgroundColor: 'darkseagreen',}}>
         <Boxes team="Enemy" />
         <Boxes team="Player" showEnemyInteraction={showEnemyInteraction} loadInteractionInfomation={loadInteractionInfomation}
         unitInfoUpdate={unitInfoUpdate}/>
@@ -1053,19 +1096,6 @@ function ShopScene() {
   );
 }
 
-function EnhanceScene() {
-  return (
-    <View style={{ flex: 7, justifyContent: "space-between", }}>
-      <Image source={require('./../../assets/enhance.png')} style={styles.enhancebox} resizeMode="stretch" />
-      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
-        <ShowStatus_UnderBar />
-      </View>
-    </View>
-  );
-}
-
-
-
 const Drawer = createDrawerNavigator();
 
 export default function MiniGameMain() {
@@ -1095,33 +1125,29 @@ const styles = StyleSheet.create({
   },
   mainSceneContainer: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#FFDD87',
   },
   mainSceneTitleContainer: {
     flex: 0.5,
-    backgroundColor: '#fff',
+    paddingTop: '15%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  bookSceneContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFDD87',
   },
   ScoreSceneContainer: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#FFDD87',
   },
   ScoreTab: {
     flex: 1,
     padding: 20,
     paddingLeft: 30,
     backgroundColor: '#fff',
+    //backgroundColor: '#FFDD87',
   },
   titleText: {
     fontSize: 24,
