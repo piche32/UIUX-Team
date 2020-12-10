@@ -74,7 +74,7 @@ useEffect(() => {
         {translateY: y.value},
         {scale: props.scale},
       ],
-      zIndex: 10000,
+      zIndex: 100,
        }
   })
 

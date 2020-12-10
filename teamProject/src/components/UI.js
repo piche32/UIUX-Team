@@ -5,6 +5,8 @@ import { StyleSheet, View, Pressable, Image, ImageBackground, TouchableOpacity, 
 import {Text, Avatar} from 'react-native-paper';
 import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import SvgMoney from '../../assets/money.svg';
+import SvgBug from '../../assets/garden/ladyBug.svg';
 
 function PlateUI(props){
     const [icon, setIcon] = useState(null);
@@ -55,13 +57,20 @@ function PlateUIBase(props) {
     useEffect(() => {
         let myIcon = null;
         if (props.icon == 'money') {
-            myIcon = <Image source={require("../../assets/money.png")}
-                style={{
-                    //backgroundColor: 'red',
-                    width: Dimensions.get('screen').width / 15,
-                    height: Dimensions.get('screen').height / 25,
-                    resizeMode: 'contain',
-                }} />
+            myIcon = <SvgMoney  width= '40%' height= '80%' style={{
+                //backgroundColor: 'red',
+                left: 0, top: 0, 
+                //resizeMode: 'contain',
+                //transform:[{scale: 0.7}],
+                marginHorizontal: "-5%"
+            }}/>
+            // myIcon = <Image source={require("../../assets/money.png")}
+            //     style={{
+            //         //backgroundColor: 'red',
+            //         width: Dimensions.get('screen').width / 15,
+            //         height: Dimensions.get('screen').height / 25,
+            //         resizeMode: 'contain',
+            //     }} />
         }
         else if (props.icon == 'field'){
             myIcon = <Image source={require("../../assets/garden/weeds.png")}
@@ -76,16 +85,10 @@ function PlateUIBase(props) {
             }} />
         }
         else if(props.icon == 'flower'){
-            myIcon = <Image source={require("../../assets/garden/flower_icon.png")}
-            style={{
-                //backgroundColor: 'red',
-                left: 0, top: 0, 
-                width: '40%', //Dimensions.get('screen').width / 5,
-                height: '100%',//Dimensions.get('screen').height / 15,
-                resizeMode: 'contain',
-                transform:[{scale: 0.75}],
-                marginHorizontal: "-6%"
-            }} />
+            myIcon = <MaterialCommunityIcons name="flower-tulip" size={24} color="red" />
+        }
+        else if(props.icon == 'bug'){
+            myIcon = <MaterialCommunityIcons name="ladybug" size={24} color="black" />
         }
         setIcon(myIcon);
     }, []);
@@ -136,7 +139,7 @@ export default function UI(props) {
                 flex: 1,
                 width: Dimensions.get('screen').width,
                 height: Dimensions.get('screen').height / 6.8,
-                zIndex: 100000,
+                zIndex: 9998,
                 resizeMode: "contain",
                 marginBottom: '-1.2%',
             }} >
@@ -184,7 +187,7 @@ export default function UI(props) {
                             width: Dimensions.get('screen').width / 4.5,
                             height: Dimensions.get('screen').width / 4.5,
                      justifyContent: 'space-around', alignItems: 'center'}}>
-                        <PlateUIBase icon ={'flower'} data={`${props.flowerNum}/${props.flowerMax}`} />
+                        <PlateUIBase icon ={'bug'} data={`${props.bugSpace}/${props.bugMax}`} />
 
                     </View>
                 </View>

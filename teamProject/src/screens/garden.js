@@ -6,7 +6,7 @@ import { Button, Text, Provider as PaperProvider } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ShopScene from './shopMain';
 import MainScene from './main';
-import BookScene from './book';
+import BookScene from './book_ver2';
 
 function TitleScene({ navigation }) {
   const pressBT = () => {
@@ -31,71 +31,71 @@ export default class Gardens extends React.Component {
     };
   }
 
-  changeCategory = () => {
-    console.log("Icon: ", this.state.bookIcon);
-    let icon = null;
-    if (this.state.bookCategory === 'flower') {
-      icon = <View style={{
-        paddingRight: '15%',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignContent: 'center',
-        alignItems: 'center'
-      }}>
-        <MaterialCommunityIcons name="flower" size={24} color="black" />
-        <View style={{
-          backgroundColor: 'gray',
-          width: '100%',
-          justifyContent: 'center',
-          alignContent: 'center',
-          alignItems: 'center',
-        }}>
-          <Text style={{ color: 'black' }}>{this.state.flowerSpacies}/{this.state.flowerMaxSpacies}</Text>
-        </View>
-      </View>
-    }
-    else if (this.state.bookCategory === 'tree') {
-      icon = <View style={{
-        paddingRight: '15%',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignContent: 'center',
-        alignItems: 'center'
-      }}>
-        <MaterialCommunityIcons name="pine-tree" size={24} color="black" />
-        <View style={{
-          backgroundColor: 'gray',
-          width: '100%',
-          justifyContent: 'center',
-          alignContent: 'center',
-          alignItems: 'center',
-        }}>
-          <Text style={{ color: 'black' }}>{this.state.treeSpacies}/{this.state.treeMaxSpacies}</Text>
-        </View>
-      </View>
-    }
-    else if (this.state.bookCategory === 'bug') {
-      icon = <View style={{
-        paddingRight: '15%',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignContent: 'center',
-        alignItems: 'center'
-      }}>
-        <MaterialCommunityIcons name="ladybug" size={24} color="black" />
-        <View style={{
-          backgroundColor: 'gray',
-          width: '100%',
-          justifyContent: 'center',
-          alignContent: 'center',
-          alignItems: 'center',
-        }}>
-          <Text style={{ color: 'black' }}>{this.state.bugSpacies}/{this.state.bugMaxSpacies}</Text>
-        </View>
-      </View>
-    }
-    this.state.bookIcon = icon;
-  }
+  // changeCategory = () => {
+  //   console.log("Icon: ", this.state.bookIcon);
+  //   let icon = null;
+  //   if (this.state.bookCategory === 'flower') {
+  //     icon = <View style={{
+  //       paddingRight: '15%',
+  //       flexDirection: 'row',
+  //       justifyContent: 'center',
+  //       alignContent: 'center',
+  //       alignItems: 'center'
+  //     }}>
+  //       <MaterialCommunityIcons name="flower" size={24} color="black" />
+  //       <View style={{
+  //         backgroundColor: 'gray',
+  //         width: '100%',
+  //         justifyContent: 'center',
+  //         alignContent: 'center',
+  //         alignItems: 'center',
+  //       }}>
+  //         <Text style={{ color: 'black' }}>{this.state.flowerSpacies}/{this.state.flowerMaxSpacies}</Text>
+  //       </View>
+  //     </View>
+  //   }
+  //   else if (this.state.bookCategory === 'tree') {
+  //     icon = <View style={{
+  //       paddingRight: '15%',
+  //       flexDirection: 'row',
+  //       justifyContent: 'center',
+  //       alignContent: 'center',
+  //       alignItems: 'center'
+  //     }}>
+  //       <MaterialCommunityIcons name="pine-tree" size={24} color="black" />
+  //       <View style={{
+  //         backgroundColor: 'gray',
+  //         width: '100%',
+  //         justifyContent: 'center',
+  //         alignContent: 'center',
+  //         alignItems: 'center',
+  //       }}>
+  //         <Text style={{ color: 'black' }}>{this.state.treeSpacies}/{this.state.treeMaxSpacies}</Text>
+  //       </View>
+  //     </View>
+  //   }
+  //   else if (this.state.bookCategory === 'bug') {
+  //     icon = <View style={{
+  //       paddingRight: '15%',
+  //       flexDirection: 'row',
+  //       justifyContent: 'center',
+  //       alignContent: 'center',
+  //       alignItems: 'center'
+  //     }}>
+  //       <MaterialCommunityIcons name="ladybug" size={24} color="black" />
+  //       <View style={{
+  //         backgroundColor: 'gray',
+  //         width: '100%',
+  //         justifyContent: 'center',
+  //         alignContent: 'center',
+  //         alignItems: 'center',
+  //       }}>
+  //         <Text style={{ color: 'black' }}>{this.state.bugSpacies}/{this.state.bugMaxSpacies}</Text>
+  //       </View>
+  //     </View>
+  //   }
+  //   this.state.bookIcon = icon;
+  // }
 
 
   render() {
@@ -109,7 +109,7 @@ export default class Gardens extends React.Component {
           }} />
           <Stack.Screen name="Book" component={BookScene}
             options={({navigation,route})=> ({
-              headerTitleAlign: 'center',
+              headerShown: false
             })} />
           <Stack.Screen name="Shop" component={ShopScene} initialParams={{ money: this.state.money }}
             options={{

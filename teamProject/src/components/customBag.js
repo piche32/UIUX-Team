@@ -3,9 +3,11 @@ import React, {useState, useEffect, useLayoutEffect} from 'react';
 import {Pressable, StyleSheet, View, ScrollView, Dimensions, Image, TouchableWithoutFeedback } from 'react-native';
 import {DefaultTheme, Text, Modal, Provider as PaperProvider, Portal, Button} from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { PanGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
+
 import SmallBag from '../../assets/SmallBag.svg';
+import ItemBG from '../../assets/ItemBG.svg';
 
 
 
@@ -29,6 +31,7 @@ const Item = (props) => {
                     }
 
     const pressed = () => {
+        if(props.id == 'null') return;
         switch (props.usedScreen) {
             case "main":
                 detail = <View>
@@ -72,13 +75,14 @@ const Item = (props) => {
 
     const animatedStyle = useAnimatedStyle(()=> {
         return {
-            backgroundColor: backgroundColor.value
+            //backgroundColor: backgroundColor.value
         }
     })
     return (
         <PanGestureHandler onGestureEvent={panHandler}>
-            <Animated.View style={[animatedStyle, {paddingHorizontal: '2%', paddingVertical: '2%'}]}>
+            <Animated.View style={[animatedStyle, {marginHorizontal: '39.8%', borderRadius: 25, }]}>
                 <TouchableOpacity onPress={pressed}>
+                    <ItemBG style={{...StyleSheet.absoluteFill}}/>
                     {props.icon}
                 </TouchableOpacity>
                 {detail}
@@ -107,7 +111,7 @@ const Items = (props) => {
     {
         name: 'Fertilizer',
         id: 'fertilizer',
-        icon: <Image source={require('../../assets/garden/fertilizer.png')} style={ styles.icon}/>,
+        icon: <Image source={require('../../assets/garden/fertilizer.png')} style={ [styles.icon,{ transform: [{scale: 0.65}]}]}/>,
         usedScreen: props.usedScreen,
         growTime: 5000,
         detail: "Growing Time: 5s",
@@ -116,6 +120,20 @@ const Items = (props) => {
         hideDetail: props.hideDetail,
         hideBag: props.hideBag,
         active: true,
+        useObject: null,
+    },
+    {
+        name: 'null',
+        id: 'null',
+        icon: <View  style={ [styles.icon,{ transform: [{scale: 0.65}]}]}/>,
+        usedScreen: props.usedScreen,
+        growTime: 5000,
+        detail: "Growing Time: 5s",
+        showDetail: props.showDetail,
+        setDetailObject: props.setDetailObject,
+        hideDetail: props.hideDetail,
+        hideBag: props.hideBag,
+        active: false,
         useObject: null,
     },
     ]);
@@ -153,59 +171,101 @@ useLayoutEffect(()=>{setFn();},[])*/
     }
 
     return (
-    <View key = "itemContainer" style={styles.list}>  
+    <View key = "itemContainer" style={[styles.list,]}>  
         {itemsRender}
     </View>
     );
 }
 
 
-const bagModalStyle = {
-    backgroundColor: 'white',
-    padding: 20,
-    height: "70%",
-    width: "70%",
-    marginLeft: "15%",
-  };
 
-export default function Bag(props) {
+const CustomBag = (props) => {
+    const window = Dimensions.get('screen');
+    const x = useSharedValue(window.width*-1);
+
+    const hide = () => {
+        x.value=withTiming(window.width*-1, {duration: 300});
+        setTimeout(()=>props.hide(), 300);
+    }
+
+    useEffect(() => {
+        if(props.visible == true) x.value = withTiming(0);
+    }, [props.visible]);
+
+    const animatedStyle = useAnimatedStyle( () => {
+        return {
+            transform: [{translateX: x.value}],
+            //backgroundColor: 'red',
+            marginVertical: 210,
+            zIndex: 10000,
+        };
+    });
+
+    if (!props.visible) return null;
     return (
-        <Modal visible ={props.visible} onDismiss={props.hideBag} contentContainerStyle = {bagModalStyle}>
-            <View style={styles.bagList}>
-                <Items usedScreen={props.usedScreen} showDetail={props.showDetail}
+    <View style={styles.absoluteContainer}>
+        <Pressable style={{
+            position: 'absolute' , zIndex: 9999,
+        }} onPress={hide}>
+            <View style={{
+                backgroundColor: "white", opacity:0.4, width: Dimensions.get("window").width,
+                height: Dimensions.get("window").height, x: 0, top: 0
+            }} />
+        </Pressable>
+        <Animated.View style={[styles.absoluteContainer, animatedStyle]}>
+            <SmallBag width= "100%" height="100%" style={{...StyleSheet.absoluteFill}} />
+            <Items style={{position: 'absolute',}}
+            usedScreen={props.usedScreen} showDetail={props.showDetail}
                     setDetailObject={props.setDetailObject}
-                    hideDetail={props.hideDetail} hideBag={props.hideBag} useSeed={props.useSeed} objIdx={props.objIdx} />
-            </View>
-        </Modal>
+                    hideDetail={props.hideDetail} hideBag={props.hide} useSeed={props.useSeed} objIdx={props.objIdx} />
+
+                    </Animated.View>
+    </View>
     );
 }
 
-
 const styles = StyleSheet.create({
-    bagList: {
+    container: {
         flex: 1,
+        backgroundColor: "transparent"
+    },
+    absoluteContainer: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0
+    },
+    box: {
+        width: 80,
+        height: 80,
+        backgroundColor: "blue",
+    },
+    commandText: {
+        flex:1,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        textAlignVertical: 'center',
+        color: 'white'
+    },
+    border: {
+        borderColor: 'yellow',
+        borderWidth: 10,
+        borderStyle: 'dashed',
+    },
+    icon: {
+        width: Dimensions.get('screen').width/4 ,
+        height: Dimensions.get('screen').width /4,
+        
     },
     list: {
         flex: 1,
-        flexWrap: 'wrap',
         flexDirection:'row',
         justifyContent: 'space-around',
-    },
-    item: {
-        //flex: 1,
-        width: "30%",
-        height: Dimensions.get('window').height * 10 / 100,
-        alignSelf: 'center',
-        backgroundColor: 'white',
-        borderWidth: 1,
-        marginVertical: Dimensions.get('window').height * 1 / 100,
-        flexDirection: 'row',
-        justifyContent: 'center',
         alignItems: 'center',
+        marginVertical: '14%',
+        marginHorizontal:'4%',
+        transform: [{translateY: 35}],
     },
-    icon: {
-        width: Dimensions.get('screen').width / 6,
-        height: Dimensions.get('screen').width / 6,
-        
-    }
 });
+export default CustomBag;

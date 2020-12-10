@@ -17,7 +17,9 @@ import Setting from '../components/setting';
 import Cloud from '../components/cloud';
 import UI from '../components/UI';
 import Timer from '../components/timer';
+import CustomBag from '../components/customBag';
 import { poly } from 'react-native/Libraries/Animated/src/Easing';
+
 
 function WorkerUI(props) {
   return (
@@ -357,7 +359,8 @@ export default function MainScene({ navigation, route }) {
   const [fieldNum, setFieldValue] = useState(0);
   const [fieldMax, setFieldMaxValue] = useState(5);
   const [flowerSpace, setFlowerSpace] = useState(0);
-  const [guardianSpace, setGuardianSpace] = useState(0);
+  const [bugSpace, setBugSpace] = useState(0);
+const bugMax = 50;
 
   const [detailObject, setDetailObject] = useState(null);
   const [usedScreen, setUsedScreen] = useState(null);
@@ -484,13 +487,11 @@ export default function MainScene({ navigation, route }) {
             <Text>최대 밭 갯수 5</Text>
           </Modal>
           <Setting visible={settingVisible} onDismiss={hideSetting} />
-          <Modal visible={bagVisible} onDismiss={hideBag}
-            contentContainerStyle={bagModalStyle}>
-            <Bag usedScreen={usedScreen} showDetail={showDetail}
+         
+            {/* <Bag usedScreen={usedScreen} visible ={bagVisible} showDetail={showDetail}
               setDetailObject={setDetailObject}
               hideDetail={hideDetail} hideBag={hideBag}
-              useSeed={useSeed} objIdx={objIdx} />
-          </Modal>
+              useSeed={useSeed} objIdx={objIdx} /> */}
           <Modal visible={detailVisible} onDismiss={hideDetail} contentContainerStyle={detailModalStyle}>
             {detailObject}
           </Modal>
@@ -578,7 +579,8 @@ export default function MainScene({ navigation, route }) {
             //alignSelf: 'center',
            // alignItems: 'center',
           }}>
-        <UI money={money} fieldNum={fieldNum} fieldMax={fieldMax} flowerNum={flowerNum} flowerMax={flowerMax} showProfile={showProfile}/>
+        <UI money={money} fieldNum={fieldNum} fieldMax={fieldMax} flowerNum={flowerNum} flowerMax={flowerMax}
+         bugSpace={bugSpace} bugMax={bugMax} showProfile={showProfile}/>
             {/*<Field showBag={showBag} setUsedScreen={()=>setUsedScreen("field")} key="field"/>*/}
           </View>
           {/* <Pressable onPress={showBottomBar} style={{ alignSelf: 'center', width: '20%', height: '3%', backgroundColor: 'red' }} /> */}
@@ -586,6 +588,12 @@ export default function MainScene({ navigation, route }) {
         <Island island={island} setIsland={setIsland} pickUp={pickUp}
           showBag={showBag} setUsedScreen={setUsedScreen} setObjIdx={setObjIdx} updatePos={updatePos}
           key={"island"} />
+
+          <CustomBag visible = {bagVisible} hide = {hideBag} 
+          usedScreen={usedScreen} showDetail={showDetail}
+              setDetailObject={setDetailObject}
+              hideDetail={hideDetail} 
+              useSeed={useSeed} objIdx={objIdx}/>
       </View>
 
 
