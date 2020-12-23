@@ -15,6 +15,8 @@ import Animated, { Easing, useSharedValue, useDerivedValue, interpolateColors, w
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Timer from '../components/timer';
 
+import Setting from '../components/setting_ver2';
+
 function StartScene({ navigation }) {
   const pressBT = () => {
     navigation.navigate("InGame");
@@ -34,7 +36,7 @@ function InGameScene() {
 
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Main" component={MainScene} options={{ headerShown: false }} />
+      <Stack.Screen name="MiniMain" component={_MainScene} options={{ headerShown: false }} />
       <Stack.Screen name="Score" component={ScoreScene} options={{ headerShown: false }}  />
       <Stack.Screen name="Tutorial" component={TutorialScene} options={{ headerShown: false }} />
     </Stack.Navigator>
@@ -70,7 +72,7 @@ const ImageModalStyle = {
   justifyContent: 'center',
 };
 
-function MainScene({ navigation }) {
+function _MainScene({ navigation }) {
   const [settingVisible, setSettingVisible] = useState(false);
   const showSetting = () => setSettingVisible(true);
   const hideSetting = () => setSettingVisible(false);
@@ -120,7 +122,7 @@ function MainScene({ navigation }) {
     navigation.navigate("GamePlay");
   }
 
-  goToGamePlayHardMode = () => {
+const  goToGamePlayHardMode = () => {
     money = 1000;
     playTime = 0;
     player = [{
@@ -165,9 +167,12 @@ function MainScene({ navigation }) {
   const goToScore = () => {
     navigation.navigate("Score");
   }
-
+  const goToMain = () => {
+    navigation.navigate("Main");
+  }
   return (
     <PaperProvider theme={theme}>
+    <Setting visible={settingVisible} hide={hideSetting} goToMain={goToMain} />
       <View style={{ ...styles.mainSceneTitleContainer, backgroundColor: '#FFDD87' }}>
         <Avatar.Image size={50} source={require('./../../assets/MiniGame/Enemy_orange.png')} resizeMode="stretch" />
         <ImageBackground source={require('../../assets/MiniGame/ExplanBar.png')} style={{ width: 143, height: 37, justifyContent: 'center' }}>
@@ -177,7 +182,7 @@ function MainScene({ navigation }) {
 
       <View style={{ ...styles.mainSceneContainer, backgroundColor: '#FFDD87' }}>
         <Portal>
-          <Modal visible={settingVisible} onDismiss={hideSetting}
+          {/* <Modal visible={settingVisible} onDismiss={hideSetting}
             contentContainerStyle={defaultModalStyle}>
             <MaterialCommunityIcons style={{ flex: 1.15, marginRight: '80%' }} onPress={hideSetting}
               name="file-excel-box" size={50} color='black' />
@@ -188,7 +193,7 @@ function MainScene({ navigation }) {
 
               <Text style={{ fontSize: 20, fontWeight: "bold", color: 'gray', marginBottom: "30%" }}>밝기</Text>
             </View>
-          </Modal>
+          </Modal> */}
           <Modal visible={GameStartVisible} onDismiss={hideGameStart}
             contentContainerStyle={ImageModalStyle}>
             <ImageBackground source={require('../../assets/MiniGame/MenuPanel.png')} style={{ position: 'absolute', width: 400, height: 412 }} />
@@ -241,7 +246,7 @@ const TopTab = createMaterialTopTabNavigator();
 
 function ScoreScene({navigation}) {
   const goToMain = () => {
-    navigation.navigate("Main");
+    navigation.navigate("InGame");
   }
 
   const [visibleScore, setvisibleScore] = useState(true)
@@ -311,7 +316,7 @@ function ScoreHard() {
 
 function TutorialScene({navigation}) {
   const goToMain = () => {
-    navigation.navigate("Main");
+    navigation.navigate("MiniMain");
   }
 
   const [refViewPager, setrefViewPager] = useState({ ...ViewPager }); // react hook
@@ -822,6 +827,10 @@ function GamePlayMainScene({ navigation }) {
     navigation.navigate("Shop");
   }
 
+  const goToMain = () => {
+    navigation.navigate("Main");
+  }
+
   const [interactionInfomation, setInteractionInfomation] = useState(null);
   const loadInteractionInfomation = () => {
     let info =
@@ -1020,7 +1029,7 @@ function GamePlayMainScene({ navigation }) {
 
   
   const [successVisible, setSuccessVisible] = useState(false);
-  const [failVisible, setfailVisible] = useState(true);
+  const [failVisible, setfailVisible] = useState(false);
 
   const hideSuccess = () => setSuccessVisible(false);
 
@@ -1035,7 +1044,7 @@ function GamePlayMainScene({ navigation }) {
     <PaperProvider theme={theme}>
       {(successVisible == true || failVisible == true) ? null : <Timer updateTimer={updateTimer} />}
       <Portal>
-        <Modal visible={settingVisible} onDismiss={hideSetting}
+        {/* <Modal visible={settingVisible} onDismiss={hideSetting}
           contentContainerStyle={GamePlayModal} >
           <MaterialCommunityIcons style={{ flex: 1.15, marginRight: '80%' }} onPress={hideSetting}
             name="file-excel-box" size={50} color='black' />
@@ -1046,7 +1055,7 @@ function GamePlayMainScene({ navigation }) {
 
             <Text style={{ fontSize: 20, fontWeight: "bold", color: 'gray', marginBottom: "30%" }}>밝기</Text>
           </View>
-        </Modal>
+        </Modal> */}
         <Modal visible={EnemyInteractionVisible} onDismiss={hideEnemyInteraction}
           contentContainerStyle={{ ...ImageModalStyle, marginLeft: '3%', width: '94%', height: '59%' }}>
           <ImageBackground source={require('../../assets/MiniGame/InterectionPanel.png')} style={{ position: 'absolute', width: 400, height: 412 }} />
@@ -1087,7 +1096,7 @@ function GamePlayMainScene({ navigation }) {
             <Text style={{ fontSize: 35, fontWeight: 'bold', marginTop: '10%' }}>  4</Text>
           </View>
           <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>
-            <TouchableOpacity onPress={() => { }} style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: '3%', marginBottom: '5%'}}>
+            <TouchableOpacity onPress={goToMain} style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: '3%', marginBottom: '5%'}}>
               <ImageBackground source={require('../../assets/MiniGame/MenuButton.png')} style={{ width: 160, height: 74 }} >
                 <Text style={{ ...styles.titleText, fontSize: 27, fontWeight: 'bold', marginTop: '5%' }}>보상 받기</Text>
               </ImageBackground>
@@ -1102,7 +1111,7 @@ function GamePlayMainScene({ navigation }) {
             <Text style={{ fontSize: 35, fontWeight: 'bold', marginTop: '10%' }}>  0</Text>
           </View>
           <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', marginTop: '5%' }}>
-            <TouchableOpacity onPress={() => { }} style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: '3%', marginBottom: '5%'}}>
+            <TouchableOpacity onPress={goToMain} style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: '3%', marginBottom: '5%'}}>
               <ImageBackground source={require('../../assets/MiniGame/MenuButton.png')} style={{ width: 160, height: 74 }} >
                 <Text style={{ ...styles.titleText, fontSize: 27, fontWeight: 'bold', marginTop: '5%' }}>넘어가기</Text>
               </ImageBackground>
@@ -1110,6 +1119,8 @@ function GamePlayMainScene({ navigation }) {
           </View>
         </Modal>
       </Portal>
+      <Setting visible={settingVisible} hide={hideSetting} goToMain={goToMain} />
+
       <View style={{
         flexWrap: "wrap",
         flex: 1.5,
@@ -1128,9 +1139,7 @@ function GamePlayMainScene({ navigation }) {
           <TouchableOpacity onPress={goToShop} style={{ justifyContent: 'center', alignItems: 'center', marginHorizontal: '3%' }}>
             <Image source={require('../../assets/MiniGame/icon_shop.png')} style={{ width: 50, height: 50 }} resizeMode='stretch' />
           </TouchableOpacity>
-          <View style={{ alignSelf: 'center', borderColor: 'green', borderWidth: 1, marginTop: "5%" }}>
-            <MaterialCommunityIcons name="account-multiple-plus" size={50} color='black' />
-          </View>
+          
         </View>
         <View style={{
           flex: 4,
@@ -1404,17 +1413,14 @@ function ShopScene() {
   );
 }
 
-const Stack2 = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function MiniGameMain() {
   return (
-    <NavigationContainer>
-      <Stack2.Navigator>
-        <Stack2.Screen name='Start' component={StartScene} options={{ headerShown: false }} />
-        <Stack2.Screen name='InGame' component={InGameScene} options={{ headerShown: false }} />
-        <Stack2.Screen name='GamePlay' component={GamePlayScene} options={{ headerShown: false }} />
-      </Stack2.Navigator>
-    </NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name='InGame' component={InGameScene} options={{tabBarVisible: false}} />
+        <Tab.Screen name='GamePlay' component={GamePlayScene}  options={{tabBarVisible: false}}/>
+      </Tab.Navigator>
   );
 }
 

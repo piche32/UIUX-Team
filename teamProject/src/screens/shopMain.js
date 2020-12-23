@@ -6,6 +6,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Portal, Modal, Button, Provider as PaperProvider } from 'react-native-paper';
 import Bag from '../components/bag';
 
+import SVGPlate from '../../assets/garden/plate_shop.svg';
+
 const bagModalStyle = {
   backgroundColor: 'white',
   padding: 20,
